@@ -1,35 +1,51 @@
-import React from "react";
+import React, { memo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { DEFAULT_LOGOS, duplicatedLogos } from "./constants";
 
-import logo1 from "../../assets/logo_1.png";
-import logo2 from "../../assets/logo_2.png";
-import logo3 from "../../assets/logo_3.png";
-import logo4 from "../../assets/logo_4.png";
-import logo5 from "../../assets/logo_5.png";
+/* ================= STATIC ANIMATIONS ================= */
 
-const logos = [logo1, logo2, logo3, logo4, logo5];
+const containerAnimation = {
+  initial: { opacity: 0, y: 40 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 80,
+      damping: 12,
+      duration: 0.5,
+    },
+  },
+};
 
-// Duplicate logos 3 times for perfect infinite loop
-const infiniteLogos = [...logos, ...logos, ...logos];
+/* ================= COMPONENT ================= */
 
-export default function ClientSlider() {
-  // Detect screen width for mobile-specific animation speed
-  const isMobile = window.innerWidth < 640;
+const ClientSlider = ({
+  logos = DEFAULT_LOGOS,
+  repeatCount = 3,
+  mobileSpeed = 10,
+  desktopSpeed = 12,
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  /* -------- SSR-safe screen detection -------- */
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 639px)");
+    setIsMobile(media.matches);
+
+    const handler = (e) => setIsMobile(e.matches);
+    media.addEventListener("change", handler);
+
+    return () => media.removeEventListener("change", handler);
+  }, []);
+
+  const infiniteLogos = duplicatedLogos(logos, repeatCount);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        transition: {
-          type: "spring",
-          stiffness: 80,
-          damping: 12,
-          duration: 0.5,
-        },
-      }}
-      className="relative w-full overflow-hidden py-8 bg-white"
+    <motion.section
+      {...containerAnimation}
+      className="relative w-full overflow-hidden py-12 md:py-24 bg-white"
+      aria-label="Client logos"
     >
       {/* LEFT BLUR */}
       <div className="absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none" />
@@ -42,27 +58,31 @@ export default function ClientSlider() {
         className="flex w-max gap-8 sm:gap-12 lg:gap-20 will-change-transform"
         animate={{ x: ["0%", "-33.33%"] }}
         transition={{
-          duration: isMobile ? 10 : 12, 
+          duration: isMobile ? mobileSpeed : desktopSpeed,
           repeat: Infinity,
           ease: "linear",
         }}
       >
         {infiniteLogos.map((logo, index) => (
           <img
-            key={index}
+            key={`${index}-${logo}`}
             src={logo}
-            alt="Client Logo"
+            alt="Client brand logo"
+            loading="lazy"
             className="
               h-16
               sm:h-24
               lg:h-28
               xl:h-32
               object-contain 
-              opacity-90 transition
+              opacity-90 
+              transition
             "
           />
         ))}
       </motion.div>
-    </motion.div>
+    </motion.section>
   );
-}
+};
+
+export default memo(ClientSlider);

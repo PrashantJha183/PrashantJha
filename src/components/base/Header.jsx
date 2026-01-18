@@ -1,56 +1,94 @@
 // Header.jsx
-import React, { useState, useEffect, memo } from "react";
+import React, { useEffect, useState, memo, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiPhone } from "react-icons/fi";
+import { FiPhone, FiHome, FiInfo, FiLayers, FiTag } from "react-icons/fi";
 import ErrorBoundary from "../base/ErrorBoundary";
 import logoSrc from "../../assets/logo.png";
 import lowQualityLogo from "../../assets/logo.png";
 
-const menuItems = [
+/* ================= STATIC CONFIG ================= */
+
+const menuItems = Object.freeze([
   { name: "About", path: "/about" },
   { name: "Services", path: "/services" },
   { name: "Pricing", path: "/pricing" },
-];
+]);
 
-const LogoSkeleton = () => (
+const bottomNavItems = Object.freeze([
+  { name: "Home", path: "/", icon: FiHome },
+  { name: "About", path: "/about", icon: FiInfo },
+  { name: "Services", path: "/services", icon: FiLayers },
+  { name: "Pricing", path: "/pricing", icon: FiTag },
+]);
+
+const LogoSkeleton = memo(() => (
   <div className="w-28 md:w-40 h-10 bg-gray-300 rounded animate-pulse" />
-);
+));
+
+/* ================= COMPONENT ================= */
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [logoLoaded, setLogoLoaded] = useState(false);
   const location = useLocation();
 
-  const toggleMenu = () => setIsOpen((prev) => !prev);
-  const closeMenu = () => setIsOpen(false);
-
+  /* -------- Safe image preload (no memory leak) -------- */
   useEffect(() => {
+    let isMounted = true;
     const img = new Image();
+
     img.src = logoSrc;
-    img.onload = () => setLogoLoaded(true);
+    img.onload = () => {
+      if (isMounted) setLogoLoaded(true);
+    };
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const isActivePath = useCallback(
+    (path) => location.pathname === path,
+    [location.pathname]
+  );
 
   return (
     <ErrorBoundary>
-      <header className="fixed top-0 left-0 right-0 z-50 m-4 new-font">
-        {/* Header Container */}
-        <div className="mx-auto flex items-center justify-between md:justify-center px-6 py-3 md:py-0 bg-white border border-white rounded-t-lg md:rounded-md shadow-md ">
+      {/* ================= TOP HEADER ================= */}
+      <header
+        className="fixed top-0 left-0 right-0 z-50 px-4 pt-4 new-font"
+        role="banner"
+      >
+        <div
+          className="
+            mx-auto max-w-5xl
+            flex items-center justify-between
+            px-4 py-3
+            rounded-2xl
+            bg-white/40
+            backdrop-blur-xl
+            backdrop-saturate-150
+            border border-white/40
+            shadow-sm
+          "
+        >
           {/* Logo */}
-          <Link to="/" onClick={closeMenu}>
-            <div className="flex-shrink-0 mr-auto md:mr-0">
+          <Link to="/" aria-label="Go to homepage">
+            <div className="flex-shrink-0">
               {logoLoaded ? (
                 <img
                   src={logoSrc}
-                  alt="OptixDigitalAI Logo"
-                  className="w-16 h-auto md:w-28 md:h-24 object-contain transition-all duration-300 md:pt-2"
+                  alt="OptixDigitalAI – AI & Digital Solutions"
+                  width="80"
+                  height="80"
+                  loading="eager"
+                  className="w-12 md:w-20 object-contain rounded-full"
                 />
               ) : (
-                <div className="relative w-28 md:w-40 h-10">
+                <div className="relative w-28 h-10">
                   <img
                     src={lowQualityLogo}
-                    alt="Placeholder Logo"
-                    className="w-full h-full object-contain filter blur-sm"
+                    alt="OptixDigitalAI logo placeholder"
+                    className="w-full h-full object-contain blur-sm"
                   />
                   <LogoSkeleton />
                 </div>
@@ -59,14 +97,17 @@ const Header = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <nav className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 items-center">
+          <nav
+            className="hidden md:flex space-x-8 items-center"
+            aria-label="Primary navigation"
+          >
             {menuItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`transition-colors ${
-                  location.pathname === item.path
-                    ? "text-[#021024] font-bold underline underline-offset-4 decoration-[#021024]"
+                  isActivePath(item.path)
+                    ? "text-[#021024] font-bold underline underline-offset-4"
                     : "text-[#052659] font-semibold"
                 }`}
               >
@@ -75,93 +116,75 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Desktop Button */}
-          <div className="hidden md:flex ml-auto">
-            <Link to="/contact">
-              <button className="bg-[#C1E8FF] text-[#052659] font-semibold px-4 py-2 rounded-md transition inline-flex items-center space-x-2">
-                <FiPhone className="w-5 h-5" />
-                <span>Get in Touch</span>
-              </button>
-            </Link>
-          </div>
-
-          {/* Mobile Hamburger */}
-          <div className="md:hidden relative ml-auto">
+          {/* Get in Touch */}
+          <Link to="/contact" aria-label="Contact OptixDigitalAI">
             <button
-              aria-label="Toggle menu"
-              onClick={toggleMenu}
-              className="relative w-10 h-10 flex flex-col justify-center items-center"
+              type="button"
+              className="
+                bg-[#C1E8FF]
+                text-[#052659]
+                font-semibold
+                px-4 py-2
+                rounded-xl
+                shadow-md
+                inline-flex items-center gap-2
+                hover:scale-[1.02]
+                transition
+              "
             >
-              <span
-                className={`block absolute h-0.5 w-8 bg-black rounded transition-all duration-300 ${
-                  isOpen
-                    ? "rotate-45 top-1/2"
-                    : "top-[35%] left-[2px] translate-x-1"
-                }`}
-              />
-              <span
-                className={`block absolute h-0.5 w-8 bg-black rounded transition-all duration-300 ${
-                  isOpen
-                    ? "-rotate-45 top-1/2"
-                    : "top-[65%] left-[2px] -translate-x-1"
-                }`}
-              />
+              <FiPhone className="w-5 h-5" aria-hidden="true" />
+              <span>Get in Touch</span>
             </button>
-          </div>
+          </Link>
         </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <>
-              {/* Overlay */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="fixed top-[100px] inset-x-0 bottom-0 z-40 bg-white/5 backdrop-blur-[2px] backdrop-saturate-100 m-2"
-                onClick={toggleMenu}
-              />
-
-              {/* Dropdown */}
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: "auto" }}
-                exit={{ height: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="overflow-hidden shadow-md md:hidden bg-white max-w-5xl mx-auto rounded-b-lg relative z-50"
-              >
-                <div className="flex flex-col space-y-4 px-8 py-6">
-                  {/* MOBILE MENU TEXT FIXED */}
-                  {menuItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={closeMenu}
-                      className={`text-lg transition-colors ${
-                        location.pathname === item.path
-                          ? "text-[#021024] font-bold underline underline-offset-4 decoration-[#021024]"
-                          : "text-[#052659] font-semibold"
-                      }`}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-
-                  {/* Contact Button */}
-                  <Link to="/contact" onClick={closeMenu}>
-                    <button className="bg-[#C1E8FF] text-[#052659]  font-semibold px-4 py-3 rounded-md transition inline-flex items-center space-x-2 w-max">
-                      <FiPhone className="w-5 h-5" />
-                      <span>Get in Touch</span>
-                    </button>
-                  </Link>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
       </header>
+
+      {/* ================= MOBILE BOTTOM NAV ================= */}
+      <nav
+        className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden"
+        aria-label="Mobile navigation"
+      >
+        <div
+          className="
+            w-[92vw] max-w-md
+            flex items-center justify-between
+            px-6 py-3
+            rounded-2xl
+            bg-white/60
+            backdrop-blur-xl
+            backdrop-saturate-150
+            shadow-lg
+            border border-white/40
+          "
+        >
+          {bottomNavItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = isActivePath(item.path);
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="flex-1 flex flex-col items-center justify-center"
+                aria-label={item.name}
+              >
+                <div
+                  className={`
+                    p-3 rounded-full transition-all duration-300
+                    ${
+                      isActive
+                        ? "bg-[#fff] text-[#052659] shadow-md scale-105"
+                        : "text-[#052659] hover:bg-white/50"
+                    }
+                  `}
+                >
+                  <Icon className="w-5 h-5" aria-hidden="true" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </ErrorBoundary>
   );
 };
