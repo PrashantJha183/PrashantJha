@@ -1,7 +1,7 @@
 // Header.jsx
 import React, { useEffect, useState, memo, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiPhone, FiHome, FiInfo, FiLayers, FiTag } from "react-icons/fi";
+import { FiPhone, FiHome, FiInfo, FiLayers, FiBookOpen } from "react-icons/fi";
 import ErrorBoundary from "../base/ErrorBoundary";
 import logoSrc from "../../assets/logo.png";
 import lowQualityLogo from "../../assets/logo.png";
@@ -11,14 +11,14 @@ import lowQualityLogo from "../../assets/logo.png";
 const menuItems = Object.freeze([
   { name: "About", path: "/about" },
   { name: "Services", path: "/services" },
-  { name: "Pricing", path: "/pricing" },
+  { name: "Blog", path: "/pricing" },
 ]);
 
 const bottomNavItems = Object.freeze([
   { name: "Home", path: "/", icon: FiHome },
   { name: "About", path: "/about", icon: FiInfo },
   { name: "Services", path: "/services", icon: FiLayers },
-  { name: "Pricing", path: "/pricing", icon: FiTag },
+  { name: "Blog", path: "/pricing", icon: FiBookOpen },
 ]);
 
 const LogoSkeleton = memo(() => (
@@ -105,11 +105,10 @@ const Header = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`transition-colors ${
-                  isActivePath(item.path)
-                    ? "text-[#021024] font-bold underline underline-offset-4"
-                    : "text-[#052659] font-semibold"
-                }`}
+                className={`transition-colors ${isActivePath(item.path)
+                  ? "text-[#021024] font-bold underline underline-offset-4"
+                  : "text-[#052659] font-semibold"
+                  }`}
               >
                 {item.name}
               </Link>
@@ -171,10 +170,9 @@ const Header = () => {
                 <div
                   className={`
                     p-3 rounded-full transition-all duration-300
-                    ${
-                      isActive
-                        ? "bg-[#fff] text-[#052659] shadow-md scale-105"
-                        : "text-[#052659] hover:bg-white/50"
+                    ${isActive
+                      ? "bg-[#fff] text-[#052659] shadow-md scale-105"
+                      : "text-[#052659] hover:bg-white/50"
                     }
                   `}
                 >

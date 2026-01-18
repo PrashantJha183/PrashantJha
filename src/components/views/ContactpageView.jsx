@@ -1,10 +1,10 @@
-import Home from "../homepage/Home";
+import Contact from "../contactpage/Contact"
 import ErrorBoundary from "../base/ErrorBoundary";
 const ContactPageView = () => {
   return (
     <>
       <ErrorBoundary>
-        <Home />
+        <Contact />
       </ErrorBoundary>
     </>
   );

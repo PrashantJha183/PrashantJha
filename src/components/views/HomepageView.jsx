@@ -4,7 +4,7 @@ import ClientSlider from "../homepage/ClientSlider";
 import Services from "../homepage/Services";
 import Gallery from "../homepage/Gallery";
 import Choose from "../homepage/Choose";
-import Project from "../homepage/Project";
+
 const HomepageView = () => {
   return (
     <>
@@ -26,9 +26,7 @@ const HomepageView = () => {
         <Choose />
       </ErrorBoundary>
 
-      <ErrorBoundary>
-        <Project />
-      </ErrorBoundary>
+
     </>
   );
 };

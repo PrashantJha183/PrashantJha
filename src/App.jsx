@@ -9,12 +9,17 @@ import {
 import ErrorBoundary from "./components/base/ErrorBoundary";
 import SkeletonLoader from "./components/base/SkeletonLoader";
 
+
 // Lazy-load components with fallback
 const Header = lazy(() =>
   import("./components/base/Header").catch(() => ({ default: () => null }))
 );
 const Footer = lazy(() =>
   import("./components/base/Footer").catch(() => ({ default: () => null }))
+);
+
+const Project = lazy(() =>
+  import("./components/base/Project").catch(() => ({ default: () => null }))
 );
 const Home = lazy(() =>
   import("./components/views/HomepageView").catch(() => ({
@@ -167,6 +172,14 @@ const AppContent = () => {
           </Routes>
         </Suspense>
 
+
+
+
+        <Suspense fallback={<SkeletonLoader />}>
+          <ErrorBoundary>
+            <Project />
+          </ErrorBoundary>
+        </Suspense>
         {/* Footer */}
         <Suspense fallback={<SkeletonLoader />}>
           <ErrorBoundary>

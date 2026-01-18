@@ -1,10 +1,21 @@
-import Hero from "../homepage/Hero";
+import AboutIntro from "../aboutpage/AboutIntro";
+import Experience from "../aboutpage/Experience";
+import AboutService from "../aboutpage/AboutService";
 import ErrorBoundary from "../base/ErrorBoundary";
 const AboutPageView = () => {
   return (
     <>
       <ErrorBoundary>
-        <Hero />
+        <AboutIntro />
+      </ErrorBoundary>
+
+
+      <ErrorBoundary>
+        <Experience />
+      </ErrorBoundary>
+
+      <ErrorBoundary>
+        <AboutService />
       </ErrorBoundary>
     </>
   );
