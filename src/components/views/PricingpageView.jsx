@@ -1,10 +1,10 @@
-import Home from "../homepage/Home";
+import Hero from "../homepage/Hero";
 import ErrorBoundary from "../base/ErrorBoundary";
 const PricingPageView = () => {
   return (
     <>
       <ErrorBoundary>
-        <Home />
+        <Hero />
       </ErrorBoundary>
     </>
   );

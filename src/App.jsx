@@ -1,4 +1,3 @@
-// App.jsx
 import React, { memo, Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
@@ -6,71 +5,35 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+
 import ErrorBoundary from "./components/base/ErrorBoundary";
 import SkeletonLoader from "./components/base/SkeletonLoader";
 
-
-// Lazy-load components with fallback
+// Lazy Components
 const Header = lazy(() =>
   import("./components/base/Header").catch(() => ({ default: () => null }))
 );
 const Footer = lazy(() =>
   import("./components/base/Footer").catch(() => ({ default: () => null }))
 );
-
 const Project = lazy(() =>
   import("./components/base/Project").catch(() => ({ default: () => null }))
 );
 const Home = lazy(() =>
-  import("./components/views/HomepageView").catch(() => ({
-    default: () => null,
-  }))
+  import("./components/views/HomepageView").catch(() => ({ default: () => null }))
 );
 const About = lazy(() =>
-  import("./components/views/AboutpageView").catch(() => ({
-    default: () => null,
-  }))
+  import("./components/views/AboutpageView").catch(() => ({ default: () => null }))
 );
 const Contact = lazy(() =>
-  import("./components/views/ContactpageView").catch(() => ({
-    default: () => null,
-  }))
+  import("./components/views/ContactpageView").catch(() => ({ default: () => null }))
 );
 const Pricing = lazy(() =>
-  import("./components/views/PricingpageView").catch(() => ({
-    default: () => null,
-  }))
+  import("./components/views/PricingpageView").catch(() => ({ default: () => null }))
 );
 const Service = lazy(() =>
-  import("./components/views/ServicepageView").catch(() => ({
-    default: () => null,
-  }))
+  import("./components/views/ServicepageView").catch(() => ({ default: () => null }))
 );
-
-// const Terms = lazy(() =>
-//   import("./components/views/TermsAndConditionpageView").catch(() => ({
-//     default: () => null,
-//   }))
-// );
-
-// const Privacy = lazy(() =>
-//   import("./components/views/PrivacyPolicypageView").catch(() => ({
-//     default: () => null,
-//   }))
-// );
-
-// const Career = lazy(() =>
-//   import("./components/views/CareerpageView").catch(() => ({
-//     default: () => null,
-//   }))
-// );
-
-// Chatbot (global)
-// const Chatbot = lazy(() =>
-//   import("./components/views/ChatbotpageView").catch(() => ({
-//     default: () => null,
-//   }))
-// );
 
 //////////////////////////
 // ScrollToTop Component
@@ -84,120 +47,59 @@ const ScrollToTop = () => {
 };
 
 //////////////////////////
-// Main App Component
+// App Content (inside Router)
 //////////////////////////
-const AppContent = () => {
+const AppLayout = () => {
+  const location = useLocation();
+
   return (
     <div className="cursor-grab">
-      <Router>
-        <ScrollToTop />
+      <ScrollToTop />
 
-        {/* Header */}
-        <Suspense fallback={<SkeletonLoader />}>
-          <ErrorBoundary>
-            <Header />
-          </ErrorBoundary>
-        </Suspense>
+      {/* Header */}
+      <Suspense fallback={<SkeletonLoader />}>
+        <ErrorBoundary>
+          <Header />
+        </ErrorBoundary>
+      </Suspense>
 
-        {/* Main Routes */}
-        <Suspense fallback={<SkeletonLoader />}>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ErrorBoundary>
-                  <Home />
-                </ErrorBoundary>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <ErrorBoundary>
-                  <About />
-                </ErrorBoundary>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <ErrorBoundary>
-                  <Service />
-                </ErrorBoundary>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <ErrorBoundary>
-                  <Contact />
-                </ErrorBoundary>
-              }
-            />
-            <Route
-              path="/pricing"
-              element={
-                <ErrorBoundary>
-                  <Pricing />
-                </ErrorBoundary>
-              }
-            />
+      {/* Routes */}
+      <Suspense fallback={<SkeletonLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Service />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/pricing" element={<Pricing />} />
+        </Routes>
+      </Suspense>
 
-            {/* 
-            <Route
-              path="/terms-and-conditions"
-              element={
-                <ErrorBoundary>
-                  <Terms />
-                </ErrorBoundary>
-              }
-            />
-            <Route
-              path="/privacy-policy"
-              element={
-                <ErrorBoundary>
-                  <Privacy />
-                </ErrorBoundary>
-              }
-            />
-            <Route
-              path="/career"
-              element={
-                <ErrorBoundary>
-                  <Career />
-                </ErrorBoundary>
-              }
-            />
-            */}
-          </Routes>
-        </Suspense>
-
-
-
-
+      {/* Project (hidden only on contact page) */}
+      {location.pathname !== "/contact" && (
         <Suspense fallback={<SkeletonLoader />}>
           <ErrorBoundary>
             <Project />
           </ErrorBoundary>
         </Suspense>
-        {/* Footer */}
-        <Suspense fallback={<SkeletonLoader />}>
-          <ErrorBoundary>
-            <Footer />
-          </ErrorBoundary>
-        </Suspense>
+      )}
 
-        {/* Global Chatbot */}
-        {/* 
-        <Suspense fallback={null}>
-          <ErrorBoundary>
-            <Chatbot />
-          </ErrorBoundary>
-        </Suspense>
-        */}
-      </Router>
+      {/* Footer */}
+      <Suspense fallback={<SkeletonLoader />}>
+        <ErrorBoundary>
+          <Footer />
+        </ErrorBoundary>
+      </Suspense>
     </div>
   );
 };
+
+//////////////////////////
+// Final App Wrapper
+//////////////////////////
+const AppContent = () => (
+  <Router>
+    <AppLayout />
+  </Router>
+);
 
 export default memo(AppContent);
