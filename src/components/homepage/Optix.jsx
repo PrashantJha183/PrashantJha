@@ -2,7 +2,7 @@
 import React, { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-
+import { Link } from "react-router-dom"
 import optix1 from "../../assets/Optix1.png";
 import optix2 from "../../assets/Optix2.png";
 import optix3 from "../../assets/Optix3.png";
@@ -107,16 +107,15 @@ const Optix = () => {
           </a>
 
           {/* Learn More */}
-          <a
-            href="https://optixdigitalai.com/about/"
-            target="_blank"
+          <Link
+            to="/services#optixdigitalai"
             rel="noopener noreferrer"
             aria-label="Learn more about OptixDigitalAI"
             className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#052659] border border-[#052659] font-medium rounded-lg shadow-sm transition-all duration-300 hover:bg-gray-100 hover:gap-3 text-sm sm:text-base"
           >
             Learn More
             <ArrowUpRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
       </div>
     </motion.article>

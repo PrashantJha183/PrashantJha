@@ -107,31 +107,56 @@ const Home = () => {
         clean user experiences that help businesses grow digitally.
       </motion.p>
 
-      {/* Button */}
-      <motion.button
-        type="button"
+      {/* Buttons */}
+      <motion.div
         variants={bounceVariant}
         initial="initial"
         whileInView="animate"
         viewport={{ once: false, amount: 0.3 }}
         transition={{ type: "spring", stiffness: 90, damping: 12 }}
-        className="
-          mt-2 
-          px-8 py-3 
-          bg-[#C1E8FF] 
-          text-[#052659] 
-          font-semibold 
-          rounded-lg 
-          shadow-md 
-          flex items-center gap-2
-          hover:scale-105 
-          transition
-        "
-        aria-label="Know more about my work"
+        className="flex gap-4 mt-2"
       >
-        <span>Know More</span>
-        <FiArrowRight className="w-5 h-5" aria-hidden="true" />
-      </motion.button>
+        {/* Know More → About */}
+        <motion.a
+          href="/about"
+          className="
+            px-8 py-3
+            bg-[#C1E8FF]
+            text-[#052659]
+            font-semibold
+            rounded-lg
+            shadow-md
+            flex items-center gap-2
+            hover:scale-105
+            transition
+          "
+          aria-label="Know more about me"
+        >
+          <span>Know More</span>
+          <FiArrowRight className="w-5 h-5" aria-hidden="true" />
+        </motion.a>
+
+        {/* Services */}
+        <motion.a
+          href="/services"
+          className="
+            px-8 py-3
+            border
+            border-[#C1E8FF]
+            text-[#C1E8FF]
+            font-semibold
+            rounded-lg
+            shadow-md
+            flex items-center gap-2
+            hover:scale-105
+            transition
+          "
+          aria-label="View my services"
+        >
+          <span>Services</span>
+          <FiArrowRight className="w-5 h-5" aria-hidden="true" />
+        </motion.a>
+      </motion.div>
     </section>
   );
 };

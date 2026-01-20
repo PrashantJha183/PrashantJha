@@ -122,7 +122,7 @@ const AboutService = () => {
                                 className={`px-5 py-3 rounded-lg font-bold text-left transition-all duration-300
           backdrop-blur-lg border border-white/40 shadow-md
           ${selected.title === cat.title
-                                        ? "bg-white/80 text-[#052659] scale-105"
+                                        ? "bg-white/80 text-[#052659]"
                                         : "bg-white/10 text-white hover:bg-white/40 hover:text-[#052659]"}`}
                             >
                                 {cat.title}

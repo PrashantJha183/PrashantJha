@@ -16,7 +16,7 @@ const AboutIntro = () => {
     <section
       className="
         bg-[#052659]
-        h-[75vh] md:h-[80vh]
+        h-[70vh] md:h-[65vh]
         rounded-b
         flex flex-col
         justify-center
@@ -28,7 +28,7 @@ const AboutIntro = () => {
       "
       aria-labelledby="about-heading"
     >
-      <motion.h2
+      {/* <motion.h2
         id="about-heading"
         variants={bounceVariant}
         initial="initial"
@@ -38,7 +38,7 @@ const AboutIntro = () => {
         className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4"
       >
         About Me
-      </motion.h2>
+      </motion.h2> */}
 
       <motion.p
         variants={bounceVariant}
@@ -67,31 +67,56 @@ const AboutIntro = () => {
         experience, and brand visibility.
       </motion.p>
 
-      {/* ===== CTA Button ===== */}
-      <motion.button
-        type="button"
+      {/* ===== CTA Buttons ===== */}
+      <motion.div
         variants={bounceVariant}
         initial="initial"
         whileInView="animate"
         viewport={{ once: false, amount: 0.3 }}
         transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.3 }}
-        className="
-          mt-6
-          px-8 py-3
-          bg-[#C1E8FF]
-          text-[#052659]
-          font-semibold
-          rounded-lg
-          shadow-md
-          flex items-center gap-2
-          hover:scale-105
-          transition
-        "
-        aria-label="View my portfolio"
+        className="flex gap-4 mt-6"
       >
-        View My Portfolio
-        <FiArrowRight className="w-5 h-5" />
-      </motion.button>
+        {/* Portfolio */}
+        <motion.a
+          href="/portfolio"
+          className="
+            px-8 py-3
+            bg-[#C1E8FF]
+            text-[#052659]
+            font-semibold
+            rounded-lg
+            shadow-md
+            flex items-center gap-2
+            hover:scale-105
+            transition
+          "
+          aria-label="View my portfolio"
+        >
+          Portfolio
+          <FiArrowRight className="w-5 h-5" />
+        </motion.a>
+
+        {/* Blog */}
+        <motion.a
+          href="/blog"
+          className="
+            px-8 py-3
+            border
+            border-[#C1E8FF]
+            text-[#C1E8FF]
+            font-semibold
+            rounded-lg
+            shadow-md
+            flex items-center gap-2
+            hover:scale-105
+            transition
+          "
+          aria-label="Read my blog"
+        >
+          Blog
+          <FiArrowRight className="w-5 h-5" />
+        </motion.a>
+      </motion.div>
     </section>
   );
 };

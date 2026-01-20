@@ -2,6 +2,7 @@
 import React, { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom"
 
 import gc1 from "../../assets/gripChain1.png";
 import gc2 from "../../assets/gripChain2.png";
@@ -119,7 +120,6 @@ const GripChain = () => {
           {/* Visit Website */}
           <a
             href="https://gripchain.in/"
-            target="_blank"
             rel="noopener noreferrer"
             aria-label="Visit Grip Chain Packtech Limited website"
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#052659] text-white rounded-lg font-medium shadow-md transition-all duration-300 hover:gap-3 text-sm sm:text-base"
@@ -129,8 +129,8 @@ const GripChain = () => {
           </a>
 
           {/* Learn More */}
-          <a
-            href="https://gripchain.in/about-us/"
+          <Link
+            to="/services#grip-chain-packtech"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Learn more about Grip Chain Packtech Limited"
@@ -138,7 +138,7 @@ const GripChain = () => {
           >
             Learn More
             <ArrowUpRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
       </div>
     </motion.article>

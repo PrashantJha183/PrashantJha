@@ -2,6 +2,7 @@
 import React, { memo, useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { Link } from "react-router-dom"; // ✅ ADDED
 import {
   CheckCircle,
   Code,
@@ -22,16 +23,16 @@ const ServiceCard = memo(({ icon, title, features, index }) => {
     controls.start(
       inView
         ? {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            transition: {
-              type: "spring",
-              stiffness: 80,
-              damping: 12,
-              mass: 0.7,
-            },
-          }
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: {
+            type: "spring",
+            stiffness: 80,
+            damping: 12,
+            mass: 0.7,
+          },
+        }
         : { opacity: 0, y: 40, scale: 0.95 }
     );
   }, [inView, controls]);
@@ -61,12 +62,14 @@ const ServiceCard = memo(({ icon, title, features, index }) => {
       "
     >
       {/* ===== MOBILE BACKGROUND NUMBER (CENTERED) ===== */}
-      <span className="absolute inset-0 flex  top-3 left-4 text-7xl font-bold text-[#052659]/10 sm:hidden">
+      <span className="absolute inset-0 flex top-3 left-4 text-7xl font-bold text-[#052659]/10 sm:hidden">
         {cardNumber}
       </span>
 
       {/* ===== ICON (HIDDEN ON MOBILE) ===== */}
-      <div className="hidden sm:block text-[#052659] text-6xl mb-4">{icon}</div>
+      <div className="hidden sm:block text-[#052659] text-6xl mb-4">
+        {icon}
+      </div>
 
       {/* TITLE */}
       <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-[#052659] relative z-10 text-center">
@@ -74,11 +77,11 @@ const ServiceCard = memo(({ icon, title, features, index }) => {
       </h3>
 
       {/* ===== MOBILE VIEW ALL BUTTON (CENTERED) ===== */}
-      <div className="relative z-10 mt-3 sm:hidden">
+      <Link to="/services" className="relative z-10 mt-3 sm:hidden">
         <div className="w-10 h-10 rounded-full bg-[#052659] flex items-center justify-center">
           <ArrowUpRight className="w-6 h-6 text-white" />
         </div>
-      </div>
+      </Link>
 
       {/* ===== FEATURES (HIDDEN ON MOBILE) ===== */}
       <ul className="hidden sm:block text-gray-800 text-base md:text-lg text-left space-y-2 mt-2">
@@ -147,23 +150,23 @@ const Services = () => {
     headingControls.start(
       inView
         ? {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            transition: {
-              type: "spring",
-              stiffness: 120,
-              damping: 12,
-              bounce: 0.5,
-            },
-          }
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: {
+            type: "spring",
+            stiffness: 120,
+            damping: 12,
+            bounce: 0.5,
+          },
+        }
         : { opacity: 0, y: -20, scale: 0.9 }
     );
   }, [inView, headingControls]);
 
   return (
     <section
-      className="min-h-[50vh]  bg-[#7DA0CA] py-16 px-6 new-font rounded-t m-2"
+      className="min-h-[50vh] bg-[#7DA0CA] py-16 px-6 new-font rounded-t m-2"
       aria-labelledby="services-heading"
     >
       <div className="max-w-full mx-auto text-center relative z-10">
@@ -218,9 +221,9 @@ const Services = () => {
                 ))}
               </ul>
 
-              <div className="flex justify-center">
+              {/* ===== DESKTOP VIEW ALL BUTTON ===== */}
+              <Link to="/services" className="flex justify-center">
                 <div className="relative w-16 h-16">
-                  {/* ===== SVG CURVED TEXT ===== */}
                   <svg
                     viewBox="0 0 120 120"
                     className="absolute inset-0 w-full h-full"
@@ -229,38 +232,28 @@ const Services = () => {
                       <path
                         id={`viewAllPath`}
                         d="
-            M 60,60
-            m -45,0
-            a 45,45 0 1,1 90,0
-            a 45,45 0 1,1 -90,0
-          "
+                          M 60,60
+                          m -45,0
+                          a 45,45 0 1,1 90,0
+                          a 45,45 0 1,1 -90,0
+                        "
                       />
                     </defs>
 
-                    <text
-                      fill="#000"
-                      fontSize="12"
-                      fontWeight="600"
-                      letterSpacing="3"
-                    >
-                      <textPath
-                        href="#viewAllPath"
-                        startOffset="25%"
-                        textAnchor="middle"
-                      >
+                    <text fill="#000" fontSize="12" fontWeight="600" letterSpacing="3">
+                      <textPath href="#viewAllPath" startOffset="25%" textAnchor="middle">
                         VIEW ALL
                       </textPath>
                     </text>
                   </svg>
 
-                  {/* ===== CENTER CIRCLE ===== */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
                       <ArrowUpRight className="w-6 h-6 text-black" />
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

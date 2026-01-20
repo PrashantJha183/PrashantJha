@@ -9,10 +9,9 @@ const timeline = [
         text: [
             "Started the Integrated MCA (BCA + MCA) program with a specialization in Full Stack Development.",
             "Built strong fundamentals in programming, data structures, and modern web technologies.",
-            "Developed a clear understanding of frontend and backend architecture and workflows."
+            "Developed a clear understanding of frontend and backend architecture and workflows.",
         ],
     },
-
     {
         year: "2022",
         title: "Practical Learning & Early Development Experience",
@@ -20,10 +19,9 @@ const timeline = [
             "Began working with PHP and MySQL as an accessible starting point for backend development.",
             "Learned how APIs enable communication between frontend and backend systems.",
             "Explored complete full stack workflows for real-world web applications.",
-            "Served as a Teaching Assistant, strengthening communication, analytical thinking, and problem-solving abilities."
+            "Served as a Teaching Assistant, strengthening communication, analytical thinking, and problem-solving abilities.",
         ],
     },
-
     {
         year: "2023",
         title: "Transition to MERN Stack & Internship Growth",
@@ -32,10 +30,9 @@ const timeline = [
             "Transitioned from traditional backend technologies to the modern MERN stack ecosystem.",
             "Completed an internship focused on JavaScript-based application architecture and scalable solutions.",
             "Delivered production-ready projects across both MERN and PHP stacks.",
-            "Gained hands-on experience with GitHub collaboration, version control, and deployment workflows."
+            "Gained hands-on experience with GitHub collaboration, version control, and deployment workflows.",
         ],
     },
-
     {
         year: "2024",
         title: "Professional Full Stack Role at Agratas Infotech",
@@ -43,10 +40,9 @@ const timeline = [
             "Joined Agratas Infotech as a Full Stack Developer.",
             "Developed scalable MERN-based applications for domestic and international clients.",
             "Collaborated in a structured team environment while following SDLC best practices.",
-            "Enhanced backend security using tools such as Helmet, Mongo-Sanitize, Joi Validation, and Express-Validator."
+            "Enhanced backend security using tools such as Helmet, Mongo-Sanitize, Joi Validation, and Express-Validator.",
         ],
     },
-
     {
         year: "2025",
         title: "Full Stack Developer at Bazaar Digital",
@@ -55,51 +51,58 @@ const timeline = [
             "Handled the complete SDLC for secure and optimized MERN applications.",
             "Managed DNS configuration, deployment processes, and client communication independently.",
             "Improved application performance and resolved security vulnerabilities across multiple client projects.",
-            "Worked with more than 15 clients across diverse industries."
+            "Worked with more than 15 clients across diverse industries.",
         ],
     },
 ];
 
-
 const StoryCard = memo(({ year, title, text, index }) => {
     const controls = useAnimation();
-    const { ref, inView } = useInView({ threshold: 0.25, triggerOnce: false });
+
+    const { ref, inView } = useInView({
+        threshold: 0.35,
+        triggerOnce: false,
+    });
 
     useEffect(() => {
-        controls.start(
-            inView
-                ? {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    transition: {
-                        type: "spring",
-                        stiffness: 90,
-                        damping: 14,
-                    },
-                }
-                : { opacity: 0, y: 40, scale: 0.95 }
-        );
+        if (inView) {
+            controls.start({
+                opacity: 1,
+                y: 0,
+                transition: {
+                    duration: 0.55,
+                    ease: "easeOut",
+                },
+            });
+        } else {
+            controls.start({
+                opacity: 0,
+                y: 32,
+                transition: {
+                    duration: 0.35,
+                    ease: "easeIn",
+                },
+            });
+        }
     }, [inView, controls]);
 
     return (
         <motion.article
             ref={ref}
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            initial={{ opacity: 0, y: 32 }}
             animate={controls}
             className="
-        w-full
-        rounded-2xl
-        backdrop-blur-xl
-        bg-white/10
-        border border-white/30
-        shadow-[0_4px_30px_rgba(0,0,0,0.0)]
-        hover:shadow-[0_8px_40px_rgba(0,0,0,0)]
-        transition-all duration-300
-        p-6 sm:p-8
-        min-h-[240px] sm:min-h-[280px] md:min-h-[320px]
-        lg:sticky lg:top-36
-      "
+                w-full
+                rounded-2xl
+                backdrop-blur-xl
+                bg-white/10
+                border border-white/30
+                shadow-[0_4px_30px_rgba(0,0,0,0)]
+                transition-all duration-300
+                p-6 sm:p-8
+                min-h-[240px] sm:min-h-[280px] md:min-h-[320px]
+                lg:sticky lg:top-36
+            "
             style={{ zIndex: 10 + index }}
         >
             <p className="text-[#7DA0CA] font-semibold text-base sm:text-lg">
@@ -122,7 +125,17 @@ const StoryCard = memo(({ year, title, text, index }) => {
 const Story = () => {
     return (
         <section className="py-16 px-4 sm:px-6 md:px-12 lg:px-20 bg-[#052659] rounded-b m-2 new-font pb-4">
-            <div className="mx-auto space-y-10 sm:space-y-16 md:space-y-20 relative">
+            {/* ===== Section Heading ===== */}
+            <div className="max-w-3xl mx-auto text-center text-white space-y-3">
+                <h2 className="text-3xl md:text-5xl font-bold">
+                    The Journey So Far
+                </h2>
+                <p className="text-gray-200 text-base md:text-lg">
+                    A structured path from foundations to full-stack engineering roles.
+                </p>
+            </div>
+
+            <div className="mx-auto space-y-10 py-8 md:py-12 sm:space-y-16 md:space-y-20 relative">
                 {timeline.map((item, index) => (
                     <StoryCard key={index} index={index} {...item} />
                 ))}

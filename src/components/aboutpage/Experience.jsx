@@ -48,9 +48,16 @@ const fadeUp = {
 const Experience = () => {
     return (
         <section className="bg-white py-16 px-4 sm:px-8 new-font">
-            <h2 className="text-3xl md:text-5xl font-bold text-center text-[#052659] mb-12">
-                Experience
-            </h2>
+            <div className="mb-12 text-center">
+                <h2 className="text-2xl md:text-5xl font-bold text-[#052659]">
+                    Experience That Delivers
+                </h2>
+                <p className="mt-3 text-gray-600 text-base md:text-lg">
+                    Practical experience creating scalable systems
+                    that support real business operations.
+                </p>
+            </div>
+
 
             <div className="max-w-5xl mx-auto space-y-12">
                 {experiences.map((exp, index) => (
