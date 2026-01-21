@@ -1,11 +1,24 @@
 // constants.js
-import logo1 from "../../assets/logo_1.png";
-import logo2 from "../../assets/logo_2.png";
-import logo3 from "../../assets/logo_3.png";
-import logo4 from "../../assets/logo_4.png";
-import logo5 from "../../assets/logo_5.png";
-
-export const DEFAULT_LOGOS = Object.freeze([logo1, logo2, logo3, logo4, logo5]);
+import logo1 from "../../assets/logos.png";
+import logo2 from "../../assets/gcp.png";
+import logo3 from "../../assets/AI.jpeg";
+import logo4 from "../../assets/TVS.svg";
+import logo5 from "../../assets/MAJ_Logo_for_Web.png";
+import logo6 from "../../assets/tt.png";
+import logo7 from "../../assets/value.png";
+import logo8 from "../../assets/tre.jpeg";
+import logo9 from "../../assets/toast.png";
+export const DEFAULT_LOGOS = Object.freeze([
+  logo1,
+  logo2,
+  logo3,
+  logo4,
+  logo5,
+  logo6,
+  logo7,
+  logo8,
+  logo9,
+]);
 
 export const duplicatedLogos = (logos, times = 3) =>
   Array.from({ length: times }, () => logos).flat();

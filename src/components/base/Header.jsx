@@ -11,14 +11,14 @@ import lowQualityLogo from "../../assets/logo.png";
 const menuItems = Object.freeze([
   { name: "About", path: "/about" },
   { name: "Services", path: "/services" },
-  { name: "Blog", path: "/pricing" },
+  { name: "Blog", path: "/blog" },
 ]);
 
 const bottomNavItems = Object.freeze([
   { name: "Home", path: "/", icon: FiHome },
   { name: "About", path: "/about", icon: FiInfo },
   { name: "Services", path: "/services", icon: FiLayers },
-  { name: "Blog", path: "/pricing", icon: FiBookOpen },
+  { name: "Blog", path: "/blog", icon: FiBookOpen },
 ]);
 
 const LogoSkeleton = memo(() => (

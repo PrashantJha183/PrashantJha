@@ -1,8 +1,34 @@
 // Footer.jsx
-import React, { memo } from "react";
-import { Linkedin, Twitter, Instagram, Dribbble, ArrowUp } from "lucide-react";
+import React, { memo, useState } from "react";
+import {
+  Linkedin,
+  Github,
+  MessageCircle,
+  Mail,
+  ArrowUp,
+  CheckCircle,
+} from "lucide-react";
 
 const Footer = () => {
+  const email = "jhaprashant.works@gmail.com";
+  const [showToast, setShowToast] = useState(false);
+
+  const handleEmailClick = async () => {
+    if (window.innerWidth < 1024) {
+      // Mobile → open mail client
+      window.location.href = `mailto:${email}`;
+    } else {
+      // Desktop → copy email
+      try {
+        await navigator.clipboard.writeText(email);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
+      } catch (err) {
+        console.error("Clipboard copy failed", err);
+      }
+    }
+  };
+
   return (
     <footer className="relative new-font">
       {/* ================= FOOTER CONTAINER ================= */}
@@ -15,18 +41,24 @@ const Footer = () => {
           px-6
           relative
           overflow-hidden
-
-          /* MOBILE */
           rounded-none
-
-          /* DESKTOP SEMICIRCLE */
           md:rounded-t-[100%]
         "
       >
+        {/* ===== Toast (Desktop Only) ===== */}
+        {showToast && (
+          <div className="hidden lg:flex fixed top-6 right-6 bg-white shadow-lg border border-gray-200 px-4 py-2 rounded-lg items-center gap-2 z-50 animate-bounce">
+            <CheckCircle className="text-green-600 w-5 h-5" />
+            <span className="text-sm font-medium text-gray-800">
+              Email copied!
+            </span>
+          </div>
+        )}
+
         {/* ================= SOCIAL ICONS ================= */}
         <div className="flex justify-center gap-8 mb-16">
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/in/jhaprashant183/"
             aria-label="LinkedIn"
             target="_blank"
             rel="noopener noreferrer"
@@ -36,34 +68,32 @@ const Footer = () => {
           </a>
 
           <a
-            href="https://instagram.com"
-            aria-label="Instagram"
+            href="https://github.com/PrashantJha183"
+            aria-label="GitHub"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition"
           >
-            <Instagram />
+            <Github />
           </a>
 
           <a
-            href="https://twitter.com"
-            aria-label="Twitter"
+            href="https://wa.me/918828382326"
+            aria-label="WhatsApp"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition"
           >
-            <Twitter />
+            <MessageCircle />
           </a>
 
-          <a
-            href="https://dribbble.com"
-            aria-label="Dribbble"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={handleEmailClick}
+            aria-label="Email"
             className="text-white hover:opacity-80 transition"
           >
-            <Dribbble />
-          </a>
+            <Mail />
+          </button>
         </div>
 
         {/* ================= FOOTER CONTENT ================= */}

@@ -131,7 +131,7 @@ const GripChain = () => {
           {/* Learn More */}
           <Link
             to="/services#grip-chain-packtech"
-            target="_blank"
+            // target="_blank"
             rel="noopener noreferrer"
             aria-label="Learn more about Grip Chain Packtech Limited"
             className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#052659] rounded-lg border border-[#052659] font-medium shadow-sm transition-all duration-300 hover:bg-gray-100 hover:gap-3 text-sm sm:text-base"

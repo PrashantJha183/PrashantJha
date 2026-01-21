@@ -72,27 +72,28 @@ const Gallery = () => {
       {/* ===== EXPLORE MORE BUTTON ===== */}
       <div className="flex justify-center mt-12">
         <a
-          href="#"
+          href="/services#use-cases"
           className="
-      inline-flex
-      items-center
-      gap-2
-      px-8
-      py-4
-      border border-[#052659]
-      bg-[#052659]
-      text-[#ffff]
-      font-medium
-      rounded-lg
-      transition-all
-      duration-300
-      hover:bg-[#ffff]
-      hover:text-[#052659]
-    "
+    inline-flex
+    items-center
+    gap-2
+    px-8
+    py-4
+    border border-[#052659]
+    bg-[#052659]
+    text-[#ffff]
+    font-medium
+    rounded-lg
+    transition-all
+    duration-300
+    hover:bg-[#ffff]
+    hover:text-[#052659]
+  "
         >
           Explore More Projects
           <ArrowRight className="w-5 h-5" />
         </a>
+
       </div>
 
     </section>

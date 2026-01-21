@@ -28,8 +28,8 @@ const About = lazy(() =>
 const Contact = lazy(() =>
   import("./components/views/ContactpageView").catch(() => ({ default: () => null }))
 );
-const Pricing = lazy(() =>
-  import("./components/views/PricingpageView").catch(() => ({ default: () => null }))
+const Blog = lazy(() =>
+  import("./components/views/BlogpageView").catch(() => ({ default: () => null }))
 );
 const Service = lazy(() =>
   import("./components/views/ServicepageView").catch(() => ({ default: () => null }))
@@ -70,18 +70,21 @@ const AppLayout = () => {
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Service />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/blog" element={<Blog />} />
         </Routes>
       </Suspense>
 
-      {/* Project (hidden only on contact page) */}
-      {location.pathname !== "/contact" && (
+      {/* Project (hidden on Contact & Blog pages) */}
+      {!["/contact", "/blog"].includes(location.pathname) && (
         <Suspense fallback={<SkeletonLoader />}>
           <ErrorBoundary>
             <Project />
           </ErrorBoundary>
         </Suspense>
       )}
+
+
+
 
       {/* Footer */}
       <Suspense fallback={<SkeletonLoader />}>

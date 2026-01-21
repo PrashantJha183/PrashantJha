@@ -77,10 +77,10 @@ export default function UseCases() {
                 "Improved operational visibility, streamlined cross-department workflows, enabled data-informed decisions through AI insights, and provided a scalable ERP foundation capable of supporting enterprise-level growth.",
             website: "https://agratasinfotech.com",
             images: [
-                "/gripChain1.png",
-                "/gripChain2.png",
-                "/gripChain3.png",
-                "/gripChain4.png",
+                "/agratasinfotech1.png",
+                "/agratasinfotech2.png",
+                "/agratasinfotech3.png",
+                "/agratasinfotech4.png",
             ],
         },
         {
@@ -108,10 +108,10 @@ export default function UseCases() {
                 "Significantly improved page load performance, reduced perceived loading time on mobile devices, enhanced SEO readiness, and delivered a smooth customer browsing experience without requiring backend infrastructure.",
             website: "https://www.tvsdarbhanga.com",
             images: [
-                "/gripChain1.png",
-                "/gripChain2.png",
-                "/gripChain3.png",
-                "/gripChain4.png",
+                "/tvs1.png",
+                "/tvs2.png",
+                "/tvs4.png",
+                "/tvs7.png",
             ],
         },
         {
@@ -126,10 +126,10 @@ export default function UseCases() {
                 "Delivered a secure, scalable, and SEO-optimized jewellery platform with real-time pricing accuracy, faster load times, improved search visibility, and enhanced operational control for the client. The new system eliminated security risks, reduced manual effort, and provided a seamless experience across devices and regions.",
             website: "https://majonline.in",
             images: [
-                "/gripChain1.png",
-                "/gripChain2.png",
-                "/gripChain3.png",
-                "/gripChain4.png",
+                "/maj1.png",
+                "/maj2.png",
+                "/maj3.png",
+                "/maj4.png",
             ],
         },
         {
@@ -144,10 +144,10 @@ export default function UseCases() {
                 "Strengthened TechSouq Technology’s digital presence as a Gujarat-based agency, improved search visibility, enhanced user engagement, and provided a reliable, future-ready foundation for delivering digital and web solutions to regional and global clients.",
             website: "https://techsouqtechnologies.com/",
             images: [
-                "/gripChain1.png",
-                "/gripChain2.png",
-                "/gripChain3.png",
-                "/gripChain4.png",
+                "/tt1.png",
+                "/tt2.png",
+                "/tt3.png",
+                "/tt4.png",
             ],
         },
         {
@@ -162,10 +162,10 @@ export default function UseCases() {
                 "Created a one-stop solution for teacher exam aspirants, improved accessibility to structured learning resources, enhanced exam readiness through mock testing, and expanded reach across Bihar and other regions through scalable digital distribution.",
             website: "https://trehousingpublication.com",
             images: [
-                "/gripChain1.png",
-                "/gripChain2.png",
-                "/gripChain3.png",
-                "/gripChain4.png",
+                "/tre1.png",
+                "/tre2.png",
+                "/tre3.png",
+                "/tre4.png",
             ],
         },
     ];
@@ -180,7 +180,7 @@ export default function UseCases() {
     };
 
     return (
-        <section className="py-20 bg-white new-font px-3 md:px-0">
+        <section className="py-20 bg-white new-font px-3 md:px-0" id="use-cases">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
                 {/* ===== Section Heading ===== */}
@@ -260,3 +260,4 @@ export default function UseCases() {
         </section>
     );
 }
+

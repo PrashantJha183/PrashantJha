@@ -23,8 +23,8 @@ const containerAnimation = {
 const ClientSlider = ({
   logos = DEFAULT_LOGOS,
   repeatCount = 3,
-  mobileSpeed = 10,
-  desktopSpeed = 12,
+  mobileSpeed = 12,
+  desktopSpeed = 16,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -64,21 +64,32 @@ const ClientSlider = ({
         }}
       >
         {infiniteLogos.map((logo, index) => (
-          <img
+          <div
             key={`${index}-${logo}`}
-            src={logo}
-            alt="Client brand logo"
-            loading="lazy"
             className="
-              h-16
-              sm:h-24
-              lg:h-28
-              xl:h-32
-              object-contain 
-              opacity-90 
-              transition
+              flex
+              items-center
+              justify-center
+              w-28 h-20
+              sm:w-36 sm:h-20
+              lg:w-44 lg:h-28
+              xl:w-52 xl:h-32
+              flex-shrink-0
             "
-          />
+          >
+            <img
+              src={logo}
+              alt="Client brand logo"
+              loading="lazy"
+              className="
+                max-h-full
+                max-w-full
+                object-contain
+                opacity-90
+                transition
+              "
+            />
+          </div>
         ))}
       </motion.div>
     </motion.section>
