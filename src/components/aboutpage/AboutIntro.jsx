@@ -78,7 +78,7 @@ const AboutIntro = () => {
       >
         {/* Portfolio */}
         <motion.a
-          href="/portfolio"
+          href="/services#use-cases"
           className="
             px-8 py-3
             bg-[#C1E8FF]

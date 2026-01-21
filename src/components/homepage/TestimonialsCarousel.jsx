@@ -89,7 +89,7 @@ const TestimonialsCarousel = () => {
 
             {/* Carousel Wrapper */}
             <div
-                className="relative max-w-6xl mx-auto px-4"
+                className="relative max-w-6xl mx-auto px-6"
                 {...(isMobile ? swipeHandlers : {})}
             >
                 {/* LEFT BUTTON (DESKTOP ONLY) */}
