@@ -1,6 +1,8 @@
 import React, { memo, useState, useEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 /* -------------------- DATA -------------------- */
 
@@ -31,14 +33,13 @@ const testimonials = [
     },
 ];
 
-
 /* -------------------- COMPONENT -------------------- */
 
 const TestimonialsCarousel = () => {
     const [index, setIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
 
-    /* ---------- RESPONSIVE DETECTION (SAFE) ---------- */
+    /* ---------- RESPONSIVE DETECTION ---------- */
     useEffect(() => {
         const check = () => setIsMobile(window.innerWidth < 1024);
         check();
@@ -52,7 +53,7 @@ const TestimonialsCarousel = () => {
     const next = () => setIndex((prev) => Math.min(prev + 1, maxIndex));
     const prev = () => setIndex((prev) => Math.max(prev - 1, 0));
 
-    /* ---------- SWIPE HANDLERS ---------- */
+    /* ---------- SWIPE HANDLERS (MOBILE ONLY) ---------- */
     const swipeHandlers = useSwipeable({
         onSwipedLeft: next,
         onSwipedRight: prev,
@@ -63,18 +64,18 @@ const TestimonialsCarousel = () => {
     return (
         <section
             className="
-        relative
-        m-2 rounded-b
-        py-20
-        bg-[#052659]
-        text-[#C1E8FF]
-        new-font
-        overflow-hidden mt-10 md:mt-20
-      "
+                relative
+                m-2 rounded-b
+                py-20
+                bg-[#052659]
+                text-[#C1E8FF]
+                new-font
+                overflow-hidden mt-10 md:mt-20
+            "
             aria-labelledby="testimonial-heading"
         >
             {/* Heading */}
-            <div className="text-center mb-12 px-4">
+            <div className="text-center mb-10 px-4">
                 <h2
                     id="testimonial-heading"
                     className="text-3xl md:text-4xl font-bold"
@@ -87,6 +88,29 @@ const TestimonialsCarousel = () => {
                 </p>
             </div>
 
+            {/* MOBILE SWIPE HINT */}
+            {isMobile && (
+                <div className="flex justify-center mb-6">
+                    <div className="flex items-center gap-3 text-xs font-semibold text-[#C1E8FF]/90">
+                        <motion.span
+                            animate={{ x: [0, -6, 0] }}
+                            transition={{ repeat: Infinity, duration: 0.9 }}
+                        >
+                            <FaArrowLeft />
+                        </motion.span>
+
+                        <span>Swipe</span>
+
+                        <motion.span
+                            animate={{ x: [0, 6, 0] }}
+                            transition={{ repeat: Infinity, duration: 0.9 }}
+                        >
+                            <FaArrowRight />
+                        </motion.span>
+                    </div>
+                </div>
+            )}
+
             {/* Carousel Wrapper */}
             <div
                 className="relative max-w-6xl mx-auto px-6"
@@ -98,15 +122,15 @@ const TestimonialsCarousel = () => {
                     disabled={index === 0}
                     aria-label="Previous testimonial"
                     className="
-            hidden lg:flex
-            absolute -left-6 xl:-left-10 top-1/2 -translate-y-1/2
-            z-10
-            p-3 rounded-full
-            bg-[#C1E8FF]
-            text-[#052659]
-            shadow-md
-            disabled:opacity-40
-          "
+                        hidden lg:flex
+                        absolute -left-6 xl:-left-10 top-1/2 -translate-y-1/2
+                        z-10
+                        p-3 rounded-full
+                        bg-[#C1E8FF]
+                        text-[#052659]
+                        shadow-md
+                        disabled:opacity-40
+                    "
                 >
                     <FiChevronLeft size={22} />
                 </button>
@@ -115,12 +139,12 @@ const TestimonialsCarousel = () => {
                 <div className="overflow-hidden">
                     <div
                         className={`
-              flex
-              transition-transform
-              duration-500
-              ease-out
-              ${isMobile ? "gap-0" : "gap-6"}
-            `}
+                            flex
+                            transition-transform
+                            duration-500
+                            ease-out
+                            ${isMobile ? "gap-0" : "gap-6"}
+                        `}
                         style={{
                             transform: `translateX(-${index * (100 / visibleCards)}%)`,
                         }}
@@ -129,15 +153,15 @@ const TestimonialsCarousel = () => {
                             <article
                                 key={i}
                                 className="
-                  w-full
-                  lg:w-[48%]
-                  shrink-0
-                  bg-[#0B2F6B]
-                  border border-white/10
-                  rounded-xl
-                  p-6
-                  shadow-lg
-                "
+                                    w-full
+                                    lg:w-[48%]
+                                    shrink-0
+                                    bg-[#0B2F6B]
+                                    border border-white/10
+                                    rounded-xl
+                                    p-6
+                                    shadow-lg
+                                "
                             >
                                 <p className="text-sm sm:text-base leading-relaxed mb-5">
                                     “{item.message}”
@@ -158,15 +182,15 @@ const TestimonialsCarousel = () => {
                     disabled={index === maxIndex}
                     aria-label="Next testimonial"
                     className="
-            hidden lg:flex
-            absolute -right-6 xl:-right-6 top-1/2 -translate-y-1/2
-            z-10
-            p-3 rounded-full
-            bg-[#C1E8FF]
-            text-[#052659]
-            shadow-md
-            disabled:opacity-40
-          "
+                        hidden lg:flex
+                        absolute -right-6 xl:-right-6 top-1/2 -translate-y-1/2
+                        z-10
+                        p-3 rounded-full
+                        bg-[#C1E8FF]
+                        text-[#052659]
+                        shadow-md
+                        disabled:opacity-40
+                    "
                 >
                     <FiChevronRight size={22} />
                 </button>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://prashant-jhadev.netlify.app/sitemap.xml

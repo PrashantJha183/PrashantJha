@@ -133,6 +133,30 @@ export default function UseCases() {
             ],
         },
         {
+            id: "prashant-jha",
+            title: "Prashant Jha – Developer Portfolio",
+            category: "Personal Developer Portfolio",
+
+            problem:
+                "A single professional platform was required to showcase technical skills, project experience, and career progression while clearly communicating full stack development expertise to recruiters, clients, and collaborators.",
+
+            solution:
+                "A React.js-based portfolio website was designed and developed with a focus on clean UI, high performance, and scalability. The platform was implemented as a Progressive Web App (PWA) with offline support, enabling access to content without an active internet connection. Modular components, SEO-friendly content structure, and optimized frontend performance were used to ensure long-term maintainability and strong Core Web Vitals.",
+
+            impact:
+                "The portfolio establishes a strong professional identity, improves visibility among recruiters and clients, and provides a centralized, future-ready showcase of skills, experience, and real-world project impact with reliable offline accessibility.",
+
+            website: "https://techsouqtechnologies.com/",
+
+            images: [
+                "/PJ1.png",
+                "/PJ2.png",
+                "/PJ3.png",
+                "/PJ4.png"
+            ]
+        },
+
+        {
             id: "techsouq",
             title: "TechSouq Technologies",
             category: "Digital Solutions & Web Technology Agency",
@@ -151,7 +175,7 @@ export default function UseCases() {
             ],
         },
         {
-            id: "grip-chain-packtech",
+            id: "tre",
             title: "TRE Housing Publication",
             category: "EdTech Publishing & Exam Preparation Platform",
             problem:

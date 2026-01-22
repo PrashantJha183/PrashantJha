@@ -8,6 +8,7 @@ import {
   ArrowUp,
   CheckCircle,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const email = "jhaprashant.works@gmail.com";
@@ -15,10 +16,8 @@ const Footer = () => {
 
   const handleEmailClick = async () => {
     if (window.innerWidth < 1024) {
-      // Mobile → open mail client
       window.location.href = `mailto:${email}`;
     } else {
-      // Desktop → copy email
       try {
         await navigator.clipboard.writeText(email);
         setShowToast(true);
@@ -30,22 +29,20 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative new-font">
-      {/* ================= FOOTER CONTAINER ================= */}
+    <footer className="relative new-font m-2">
       <div
         className="
           bg-[#021024]
           w-full
           min-h-[450px]
           pt-24
-          px-6
+          px-6 
           relative
           overflow-hidden
-          rounded-none
-          md:rounded-t-[100%]
+          rounded-t-footer
         "
       >
-        {/* ===== Toast (Desktop Only) ===== */}
+        {/* ===== Toast ===== */}
         {showToast && (
           <div className="hidden lg:flex fixed top-6 right-6 bg-white shadow-lg border border-gray-200 px-4 py-2 rounded-lg items-center gap-2 z-50 animate-bounce">
             <CheckCircle className="text-green-600 w-5 h-5" />
@@ -59,88 +56,135 @@ const Footer = () => {
         <div className="flex justify-center gap-8 mb-16">
           <a
             href="https://www.linkedin.com/in/jhaprashant183/"
-            aria-label="LinkedIn"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition"
+            aria-label="LinkedIn"
           >
             <Linkedin />
           </a>
 
           <a
             href="https://github.com/PrashantJha183"
-            aria-label="GitHub"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition"
+            aria-label="GitHub"
           >
             <Github />
           </a>
 
           <a
             href="https://wa.me/918828382326"
-            aria-label="WhatsApp"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition"
+            aria-label="WhatsApp"
           >
             <MessageCircle />
           </a>
 
           <button
             onClick={handleEmailClick}
-            aria-label="Email"
             className="text-white hover:opacity-80 transition"
+            aria-label="Email"
           >
             <Mail />
           </button>
         </div>
 
-        {/* ================= FOOTER CONTENT ================= */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
+        {/* ================= FOOTER LINKS ================= */}
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-white">
+
+          {/* Column 1: About */}
           <div>
             <h4 className="font-semibold text-lg mb-4 border-b border-white/30 pb-2">
-              Our Offices
+              About
             </h4>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>India: Mohali, PB</li>
-              <li>Canada: Vancouver, BC</li>
-              <li>Dubai: Disclosing Soon*</li>
+              <li>
+                <Link to="/about" className="hover:underline">
+                  About Me
+                </Link>
+              </li>
+              <li>
+                <Link to="/services#use-cases" className="hover:underline">
+                  Projects & Case Studies
+                </Link>
+              </li>
+              <li>
+                <a href="https://drive.google.com/file/d/1KFyUJdq4RROBngZ4wR3YVKuNVdAo5dlI/view?usp=drivesdk" className="hover:underline">
+                  Resume
+                </a>
+              </li>
             </ul>
           </div>
 
+          {/* Column 2: Explore */}
           <div>
             <h4 className="font-semibold text-lg mb-4 border-b border-white/30 pb-2">
-              News Feed
+              Explore
             </h4>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>In the Media</li>
-              <li>Blogs & News</li>
-              <li>Vlogs & Reels</li>
+              <li>
+                <Link to="/services" className="hover:underline">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="hover:underline">
+                  Blog & Articles
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:underline">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
 
+          {/* Column 3: Legal */}
           <div>
             <h4 className="font-semibold text-lg mb-4 border-b border-white/30 pb-2">
-              Legal Terms
+              Legal
             </h4>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>Terms & Conditions</li>
-              <li>Copyright Content Policy</li>
-              <li>Privacy Policy</li>
+              <li>
+                <Link to="/terms-and-conditions" className="hover:underline">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="hover:underline">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/disclaimer" className="hover:underline">
+                  Disclaimer
+                </Link>
+              </li>
+              {/* Optional but recommended */}
+              {/* <li>
+                <Link to="/cookies-policy" className="hover:underline">
+                  Cookies Policy
+                </Link>
+              </li> */}
             </ul>
           </div>
 
-          <div>
+          {/* Column 4: Work With Me */}
+          {/* <div>
             <h4 className="font-semibold text-lg mb-4 border-b border-white/30 pb-2">
-              Useful Links
+              Work With Me
             </h4>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>Humans of Our Team</li>
-              <li>Join as Intern</li>
-              <li>Become a Part of Team</li>
+              <li>Freelance Full Stack Projects</li>
+              <li>Web & PWA Development</li>
+              <li>Performance & SEO Optimization</li>
             </ul>
-          </div>
+          </div> */}
         </div>
 
         {/* ================= SCROLL TO TOP ================= */}

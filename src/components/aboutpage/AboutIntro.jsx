@@ -48,7 +48,7 @@ const AboutIntro = () => {
         transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.1 }}
         className="text-lg sm:text-xl text-[#C1E8FF] mb-4 leading-relaxed max-w-2xl"
       >
-        I’m <span className="font-semibold text-white">Prashant Jha</span>, a
+        I am <span className="font-semibold text-white">Prashant Jha</span>, a
         Full Stack MERN Developer who builds fast, scalable, and SEO-optimized
         web applications.
       </motion.p>
@@ -61,8 +61,7 @@ const AboutIntro = () => {
         transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.2 }}
         className="text-sm sm:text-base md:text-lg text-gray-200 max-w-3xl leading-relaxed"
       >
-        With over a year of hands-on experience, I’ve worked on ERP, LMS, CRM,
-        and CMS-based platforms. I focus on writing clean, production-ready code
+        With over a year of hands-on experience, I’ve worked on ERP, LMS and CRM platforms. I focus on writing clean, production-ready code
         and delivering modern digital solutions that improve performance, user
         experience, and brand visibility.
       </motion.p>

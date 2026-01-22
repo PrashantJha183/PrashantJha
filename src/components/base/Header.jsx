@@ -1,7 +1,11 @@
 // Header.jsx
 import React, { useEffect, useState, memo, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiPhone, FiHome, FiInfo, FiLayers, FiBookOpen } from "react-icons/fi";
+import {
+  FiHome, FiUser, FiBriefcase, FiEdit3, FiPhone
+} from "react-icons/fi";
+
+
 import ErrorBoundary from "../base/ErrorBoundary";
 import logoSrc from "../../assets/logo.png";
 import lowQualityLogo from "../../assets/logo.png";
@@ -16,10 +20,11 @@ const menuItems = Object.freeze([
 
 const bottomNavItems = Object.freeze([
   { name: "Home", path: "/", icon: FiHome },
-  { name: "About", path: "/about", icon: FiInfo },
-  { name: "Services", path: "/services", icon: FiLayers },
-  { name: "Blog", path: "/blog", icon: FiBookOpen },
+  { name: "About", path: "/about", icon: FiUser },
+  { name: "Services", path: "/services", icon: FiBriefcase },
+  { name: "Blog", path: "/blog", icon: FiEdit3 },
 ]);
+
 
 const LogoSkeleton = memo(() => (
   <div className="w-28 md:w-40 h-10 bg-gray-300 rounded animate-pulse" />

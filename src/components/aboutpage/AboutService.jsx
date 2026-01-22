@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 
 import {
     FaHtml5, FaCss3Alt, FaJsSquare, FaBootstrap, FaReact,
-    FaNodeJs, FaGitAlt, FaGithub, FaSearch, FaMicrosoft
+    FaNodeJs, FaGitAlt, FaGithub, FaSearch, FaMicrosoft,
+    FaArrowLeft, FaArrowRight
 } from "react-icons/fa";
 
 import {
@@ -23,7 +24,6 @@ const categories = [
             { name: "React", icon: FaReact, color: "#61DAFB" }
         ]
     },
-
     {
         title: "Backend",
         skills: [
@@ -33,7 +33,6 @@ const categories = [
             { name: "MongoDB", icon: SiMongodb, color: "#47A248" }
         ]
     },
-
     {
         title: "SEO",
         skills: [
@@ -42,7 +41,6 @@ const categories = [
             { name: "SEO Audit", icon: FaSearch, color: "#34A853" }
         ]
     },
-
     {
         title: "Version Control",
         skills: [
@@ -50,7 +48,6 @@ const categories = [
             { name: "GitHub", icon: FaGithub, color: "#181717" }
         ]
     },
-
     {
         title: "Collaboration",
         skills: [
@@ -79,10 +76,10 @@ const SkillGrid = memo(({ skills }) => (
                 <div
                     key={i}
                     className="flex flex-col items-center justify-center text-center
-          rounded-xl bg-white/20 backdrop-blur-smd border border-white/90
-          shadow-[0_4px_30px_rgba(0,0,0,0)]
-          hover:shadow-[0_6px_40px_rgba(0,0,0,0.25)]
-          transition-all duration-300 min-h-[120px] sm:min-h-[140px]"
+                    rounded-xl bg-white/20 backdrop-blur-smd border border-white/90
+                    shadow-[0_4px_30px_rgba(0,0,0,0)]
+                    hover:shadow-[0_6px_40px_rgba(0,0,0,0.25)]
+                    transition-all duration-300 min-h-[120px] sm:min-h-[140px]"
                 >
                     <Icon className="text-4xl sm:text-5xl mb-2" style={{ color: skill.color }} />
                     <p className="text-xs sm:text-sm font-semibold text-[#052659] tracking-wide">
@@ -100,7 +97,6 @@ const AboutService = () => {
 
     return (
         <section className="min-h-[50vh] bg-[#7DA0CA] py-16 px-6 rounded-t m-2 new-font">
-
             <div className="text-center mb-6">
                 <h2 className="text-3xl md:text-5xl font-bold text-[#052659]">
                     The Perfect Tech Stack
@@ -112,6 +108,27 @@ const AboutService = () => {
 
             <div className="max-w-6xl mx-auto">
 
+                {/* Mobile Swipe Hint */}
+                <div className="lg:hidden flex justify-center mb-2">
+                    <div className="flex items-center gap-3 text-xs font-semibold text-[#052659]">
+                        <motion.span
+                            animate={{ x: [0, -6, 0] }}
+                            transition={{ repeat: Infinity, duration: 0.9 }}
+                        >
+                            <FaArrowLeft />
+                        </motion.span>
+
+                        <span>Swipe</span>
+
+                        <motion.span
+                            animate={{ x: [0, 6, 0] }}
+                            transition={{ repeat: Infinity, duration: 0.9 }}
+                        >
+                            <FaArrowRight />
+                        </motion.span>
+                    </div>
+                </div>
+
                 {/* Mobile Buttons */}
                 <div className="lg:hidden overflow-x-auto whitespace-nowrap scrollbar-hide">
                     <div className="flex gap-3 min-w-max px-1">
@@ -120,17 +137,17 @@ const AboutService = () => {
                                 key={i}
                                 onClick={() => setSelected(cat)}
                                 className={`px-5 py-3 rounded-lg font-bold text-left transition-all duration-300
-          backdrop-blur-lg border border-white/40 shadow-md
-          ${selected.title === cat.title
+                                backdrop-blur-lg border border-white/40 shadow-md
+                                ${selected.title === cat.title
                                         ? "bg-white/80 text-[#052659]"
-                                        : "bg-white/10 text-white hover:bg-white/40 hover:text-[#052659]"}`}
+                                        : "bg-white/10 text-white hover:bg-white/40 hover:text-[#052659]"
+                                    }`}
                             >
                                 {cat.title}
                             </button>
                         ))}
                     </div>
                 </div>
-
 
                 {/* Desktop Layout */}
                 <div className="hidden lg:grid grid-cols-4 gap-10 mt-6">
@@ -139,9 +156,10 @@ const AboutService = () => {
                             <button
                                 key={i}
                                 onClick={() => setSelected(cat)}
-                                className={`border-2 px-5 py-3 rounded-lg text-left font-bold ${selected.title === cat.title
-                                    ? "bg-white/90 text-[#052659]"
-                                    : "bg-white/10 text-white border-white"
+                                className={`border-2 px-5 py-3 rounded-lg text-left font-bold
+                                ${selected.title === cat.title
+                                        ? "bg-white/90 text-[#052659]"
+                                        : "bg-white/10 text-white border-white"
                                     }`}
                             >
                                 {cat.title}

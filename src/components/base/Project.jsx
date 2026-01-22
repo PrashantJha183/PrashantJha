@@ -45,7 +45,7 @@ export default function Project() {
         </h2>
 
         <p className="text-gray-600 max-w-xl mb-8">
-          Let’s collaborate and build something meaningful together. I’m just a
+          Let’s collaborate and build something meaningful together. I am just a
           message away.
         </p>
 

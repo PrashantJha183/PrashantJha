@@ -5,6 +5,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 import ErrorBoundary from "./components/base/ErrorBoundary";
 import SkeletonLoader from "./components/base/SkeletonLoader";
@@ -15,6 +16,15 @@ const Header = lazy(() =>
 );
 const Footer = lazy(() =>
   import("./components/base/Footer").catch(() => ({ default: () => null }))
+);
+const TermsAndConditions = lazy(() =>
+  import("./components/base/TermsAndConditions").catch(() => ({ default: () => null }))
+);
+const PrivacyPolicy = lazy(() =>
+  import("./components/base/PrivacyPolicy").catch(() => ({ default: () => null }))
+);
+const Disclaimer = lazy(() =>
+  import("./components/base/Disclaimer").catch(() => ({ default: () => null }))
 );
 const Project = lazy(() =>
   import("./components/base/Project").catch(() => ({ default: () => null }))
@@ -47,13 +57,24 @@ const ScrollToTop = () => {
 };
 
 //////////////////////////
-// App Content (inside Router)
+// App Layout
 //////////////////////////
 const AppLayout = () => {
   const location = useLocation();
 
   return (
-    <div className="cursor-grab">
+    <>
+      {/* GLOBAL SEO FALLBACK */}
+      <Helmet>
+        <title>Prashant Jha | Full Stack MERN Developer</title>
+        <meta
+          name="description"
+          content="Full Stack MERN Developer building SEO-optimized, high-performance, PWA-ready web applications for global clients."
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://prashant-jhadev.netlify.app/" />
+      </Helmet>
+
       <ScrollToTop />
 
       {/* Header */}
@@ -63,28 +84,36 @@ const AppLayout = () => {
         </ErrorBoundary>
       </Suspense>
 
-      {/* Routes */}
-      <Suspense fallback={<SkeletonLoader />}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Service />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/blog" element={<Blog />} />
-        </Routes>
-      </Suspense>
-
-      {/* Project (hidden on Contact & Blog pages) */}
-      {!["/contact", "/blog"].includes(location.pathname) && (
+      {/* MAIN CONTENT (SEO landmark) */}
+      <main id="main-content">
         <Suspense fallback={<SkeletonLoader />}>
-          <ErrorBoundary>
-            <Project />
-          </ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Service />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
+          </Routes>
         </Suspense>
-      )}
+      </main>
 
-
-
+      {/* Project (hidden on specific pages) */}
+      {![
+        "/contact",
+        "/blog",
+        "/terms-and-conditions",
+        "/privacy-policy",
+        "/disclaimer",
+      ].includes(location.pathname) && (
+          <Suspense fallback={<SkeletonLoader />}>
+            <ErrorBoundary>
+              <Project />
+            </ErrorBoundary>
+          </Suspense>
+        )}
 
       {/* Footer */}
       <Suspense fallback={<SkeletonLoader />}>
@@ -92,15 +121,15 @@ const AppLayout = () => {
           <Footer />
         </ErrorBoundary>
       </Suspense>
-    </div>
+    </>
   );
 };
 
 //////////////////////////
-// Final App Wrapper
+// App Wrapper
 //////////////////////////
 const AppContent = () => (
-  <Router>
+  <Router basename="/">
     <AppLayout />
   </Router>
 );

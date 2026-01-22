@@ -2,33 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===========================
-   HIDE SCROLLBAR (ALL BROWSERS)
-   SCROLL STILL WORKS
-   =========================== */
-
-/* Chrome, Edge, Safari */
-::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-}
-
-/* Firefox */
-html {
-  scrollbar-width: none; /* hides scrollbar */
-}
-
-/* Internet Explorer 10+ (legacy) */
-body {
-  -ms-overflow-style: none;
-}
-
-/* Ensure scrolling still works */
-html,
-body {
-  overflow: auto;
-}
-
 /* Your custom styles below */
 .circle-shadow {
   position: relative;
@@ -83,6 +56,12 @@ body {
   border-top-left-radius: 4rem;
   border-top-right-radius: 4rem;
 }
+
+.rounded-t-footer {
+  border-top-left-radius: 100% 200%;
+  border-top-right-radius: 100% 200%;
+}
+
 @media (min-width: 320px) and (max-width: 768px) {
   .rounded-b {
     border-bottom-left-radius: 2rem;
@@ -92,5 +71,9 @@ body {
   .rounded-t {
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
+  }
+  .rounded-t-footer {
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
   }
 }

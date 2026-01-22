@@ -51,7 +51,7 @@ const timeline = [
             "Handled the complete SDLC for secure and optimized MERN applications.",
             "Managed DNS configuration, deployment processes, and client communication independently.",
             "Improved application performance and resolved security vulnerabilities across multiple client projects.",
-            "Worked with more than 15 clients across diverse industries.",
+            "Till now, worked with more than 15 clients across diverse industries.",
         ],
     },
 ];
@@ -135,7 +135,7 @@ const Story = () => {
                 </p>
             </div>
 
-            <div className="mx-auto space-y-10 py-8 md:py-12 sm:space-y-16 md:space-y-20 relative">
+            <div className="mx-auto space-y-10 py-8 md:py-12 sm:space-y-16 md:space-y-20 relative px-3 m:Lpx-0">
                 {timeline.map((item, index) => (
                     <StoryCard key={index} index={index} {...item} />
                 ))}
