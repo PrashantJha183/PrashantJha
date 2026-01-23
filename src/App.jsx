@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 
 import ErrorBoundary from "./components/base/ErrorBoundary";
 import SkeletonLoader from "./components/base/SkeletonLoader";
+import OfflineInfoModal from "./components/base/OfflineInfoModal";
 
 // Lazy Components
 const Header = lazy(() =>
@@ -18,31 +19,47 @@ const Footer = lazy(() =>
   import("./components/base/Footer").catch(() => ({ default: () => null }))
 );
 const TermsAndConditions = lazy(() =>
-  import("./components/base/TermsAndConditions").catch(() => ({ default: () => null }))
+  import("./components/base/TermsAndConditions").catch(() => ({
+    default: () => null,
+  }))
 );
 const PrivacyPolicy = lazy(() =>
-  import("./components/base/PrivacyPolicy").catch(() => ({ default: () => null }))
+  import("./components/base/PrivacyPolicy").catch(() => ({
+    default: () => null,
+  }))
 );
 const Disclaimer = lazy(() =>
-  import("./components/base/Disclaimer").catch(() => ({ default: () => null }))
+  import("./components/base/Disclaimer").catch(() => ({
+    default: () => null,
+  }))
 );
 const Project = lazy(() =>
   import("./components/base/Project").catch(() => ({ default: () => null }))
 );
 const Home = lazy(() =>
-  import("./components/views/HomepageView").catch(() => ({ default: () => null }))
+  import("./components/views/HomepageView").catch(() => ({
+    default: () => null,
+  }))
 );
 const About = lazy(() =>
-  import("./components/views/AboutpageView").catch(() => ({ default: () => null }))
+  import("./components/views/AboutpageView").catch(() => ({
+    default: () => null,
+  }))
 );
 const Contact = lazy(() =>
-  import("./components/views/ContactpageView").catch(() => ({ default: () => null }))
+  import("./components/views/ContactpageView").catch(() => ({
+    default: () => null,
+  }))
 );
 const Blog = lazy(() =>
-  import("./components/views/BlogpageView").catch(() => ({ default: () => null }))
+  import("./components/views/BlogpageView").catch(() => ({
+    default: () => null,
+  }))
 );
 const Service = lazy(() =>
-  import("./components/views/ServicepageView").catch(() => ({ default: () => null }))
+  import("./components/views/ServicepageView").catch(() => ({
+    default: () => null,
+  }))
 );
 
 //////////////////////////
@@ -69,11 +86,14 @@ const AppLayout = () => {
         <title>Prashant Jha | Full Stack MERN Developer</title>
         <meta
           name="description"
-          content="Full Stack MERN Developer building SEO-optimized, high-performance, PWA-ready web applications for global clients."
+          content="Full Stack MERN Developer building fast, accessible, and reliable web experiences for users across devices and networks."
         />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://prashant-jhadev.netlify.app/" />
       </Helmet>
+
+      {/* GLOBAL OFFLINE INFO MODAL */}
+      <OfflineInfoModal />
 
       <ScrollToTop />
 
@@ -93,7 +113,10 @@ const AppLayout = () => {
             <Route path="/services" element={<Service />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
-            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
           </Routes>

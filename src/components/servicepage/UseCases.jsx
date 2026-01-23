@@ -47,6 +47,20 @@ export default function UseCases() {
     }, [location]);
 
     const projects = [
+
+        {
+            id: "optixdigitalai",
+            title: "OptixDigitalAI",
+            category: "Creative Agency Website & CMS Platform",
+            problem:
+                "The agency required a high-impact digital presence that could clearly communicate its vision, showcase services and case studies, and manage content dynamically without constant developer dependency, while also improving global search visibility and handling infrastructure limitations in email and DNS management.",
+            solution:
+                "Designed and developed a modern, performance-optimized website with a custom CMS and admin panel, enabling seamless content management, service updates, and portfolio publishing. Implemented on-page and technical SEO strategies to strengthen visual presence across neighboring regions such as Nepal and Sri Lanka, extended reach into the Middle East and African markets, and expanded visibility in Western countries including the UK, France, and the USA. Additionally, handled complete email migration from Hostinger Mail to Zoho Mail, managed DNS configuration, and ensured stable, secure domain operations.",
+            impact:
+                "Established a strong global digital footprint across 30+ countries, improved organic search visibility and brand discoverability, streamlined content operations, enhanced user engagement through interactive experiences, and delivered a stable, well-managed infrastructure supporting long-term growth.",
+            website: "https://optixdigitalai.com",
+            images: ["/Optix1.png", "/Optix2.png", "/Optix3.png", "/Optix4.png"],
+        },
         {
             id: "grip-chain-packtech",
             title: "Grip Chain Packtech Limited",
@@ -63,6 +77,26 @@ export default function UseCases() {
                 "/gripChain2.png",
                 "/gripChain3.png",
                 "/gripChain4.png",
+            ],
+        },
+
+
+        {
+            id: "mahadeo-jewllers",
+            title: "Mahadeo Sah Amarnath Prasad Jewellers",
+            category: "Jewellery E-Commerce Platform",
+            problem:
+                "The client was operating on a legacy, template-based website with security vulnerabilities, poor performance, and no dynamic pricing mechanism. Manual gold price updates were error-prone, regional pricing was unsupported, and SEO visibility was limited. Additionally, DNS misconfigurations caused reliability and accessibility issues.",
+            solution:
+                "Rebuilt the platform as a modern MERN-stack application with a high-performance React + Vite frontend. Implemented RBAC and JWT-based authentication to securely manage gold pricing operations. Developed an automated gold price calculation system that dynamically updates jewellery prices based on live rates, supporting both India and Nepal regions. Optimized images client-side using lazy loading, metadata reduction, and skeleton loaders, while improving SEO structure and fixing critical DNS configuration issues.",
+            impact:
+                "Delivered a secure, scalable, and SEO-optimized jewellery platform with real-time pricing accuracy, faster load times, improved search visibility, and enhanced operational control for the client. The new system eliminated security risks, reduced manual effort, and provided a seamless experience across devices and regions.",
+            website: "https://majonline.in",
+            images: [
+                "/maj1.png",
+                "/maj2.png",
+                "/maj3.png",
+                "/maj4.png",
             ],
         },
         {
@@ -83,19 +117,7 @@ export default function UseCases() {
                 "/agratasinfotech4.png",
             ],
         },
-        {
-            id: "optixdigitalai",
-            title: "OptixDigitalAI",
-            category: "Creative Agency Website & CMS Platform",
-            problem:
-                "The agency required a high-impact digital presence that could clearly communicate its vision, showcase services and case studies, and manage content dynamically without constant developer dependency, while also improving global search visibility and handling infrastructure limitations in email and DNS management.",
-            solution:
-                "Designed and developed a modern, performance-optimized website with a custom CMS and admin panel, enabling seamless content management, service updates, and portfolio publishing. Implemented on-page and technical SEO strategies to strengthen visual presence across neighboring regions such as Nepal and Sri Lanka, extended reach into the Middle East and African markets, and expanded visibility in Western countries including the UK, France, and the USA. Additionally, handled complete email migration from Hostinger Mail to Zoho Mail, managed DNS configuration, and ensured stable, secure domain operations.",
-            impact:
-                "Established a strong global digital footprint across 30+ countries, improved organic search visibility and brand discoverability, streamlined content operations, enhanced user engagement through interactive experiences, and delivered a stable, well-managed infrastructure supporting long-term growth.",
-            website: "https://optixdigitalai.com",
-            images: ["/Optix1.png", "/Optix2.png", "/Optix3.png", "/Optix4.png"],
-        },
+
         {
             id: "tvs-darbhanga",
             title: "TVS Darbhanga",
@@ -114,24 +136,7 @@ export default function UseCases() {
                 "/tvs7.png",
             ],
         },
-        {
-            id: "mahadeo-jewllers",
-            title: "Mahadeo Sah Amarnath Prasad Jewellers",
-            category: "Jewellery E-Commerce Platform",
-            problem:
-                "The client was operating on a legacy, template-based website with security vulnerabilities, poor performance, and no dynamic pricing mechanism. Manual gold price updates were error-prone, regional pricing was unsupported, and SEO visibility was limited. Additionally, DNS misconfigurations caused reliability and accessibility issues.",
-            solution:
-                "Rebuilt the platform as a modern MERN-stack application with a high-performance React + Vite frontend. Implemented RBAC and JWT-based authentication to securely manage gold pricing operations. Developed an automated gold price calculation system that dynamically updates jewellery prices based on live rates, supporting both India and Nepal regions. Optimized images client-side using lazy loading, metadata reduction, and skeleton loaders, while improving SEO structure and fixing critical DNS configuration issues.",
-            impact:
-                "Delivered a secure, scalable, and SEO-optimized jewellery platform with real-time pricing accuracy, faster load times, improved search visibility, and enhanced operational control for the client. The new system eliminated security risks, reduced manual effort, and provided a seamless experience across devices and regions.",
-            website: "https://majonline.in",
-            images: [
-                "/maj1.png",
-                "/maj2.png",
-                "/maj3.png",
-                "/maj4.png",
-            ],
-        },
+
         {
             id: "prashant-jha",
             title: "Prashant Jha – Developer Portfolio",
@@ -146,7 +151,7 @@ export default function UseCases() {
             impact:
                 "The portfolio establishes a strong professional identity, improves visibility among recruiters and clients, and provides a centralized, future-ready showcase of skills, experience, and real-world project impact with reliable offline accessibility.",
 
-            website: "https://techsouqtechnologies.com/",
+            website: "https://prashant-jhadev.netlify.app/",
 
             images: [
                 "/PJ1.png",
@@ -155,6 +160,26 @@ export default function UseCases() {
                 "/PJ4.png"
             ]
         },
+
+        {
+            id: "hotel-shivalika-international",
+            title: "Hotel Shivalika International",
+            category: "Hotel & Hospitality Website with CRM Platform",
+            problem:
+                "The hotel required a professional digital platform to improve search visibility, manage customer inquiries efficiently, and reduce dependency on third-party tools. Lack of a structured backend, manual handling of contact queries, and poor mobile optimization limited operational efficiency and online engagement.",
+            solution:
+                "Developed a modern, SEO-optimized hotel website using React.js as the frontend, featuring responsive layouts and performance-focused architecture. Built a Node.js and Express-based backend with role-based access control (RBAC) and JWT authentication to securely manage administrative access. Integrated a serverless contact query system using Formspree for reliable form submissions, along with an admin dashboard where authorized hotel staff can view, manage, and respond to customer inquiries. Implemented data export functionality to convert customer queries into Excel, PDF, and DOC formats. The platform functions as a lightweight CMS, enabling hotel administrators to manage customer data and inquiries without technical dependency.",
+            impact:
+                "Improved search engine visibility and Core Web Vitals, delivered fast and consistent performance across devices, and streamlined customer inquiry management through a secure admin system. Enabled hotel management to efficiently track, export, and respond to guest queries, reducing manual effort while enhancing overall customer experience.",
+            website: "https://shivalikainternational.netlify.app/shivalika",
+            images: [
+                "/HS1.png",
+                "/HS2.png",
+                "/HS3.png",
+                "/HS4.png",
+            ],
+        },
+
 
         {
             id: "techsouq",
@@ -211,7 +236,7 @@ export default function UseCases() {
 
 
                 <div className="mb-14 text-center">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-[#021024]">
                         Real <span className="text-[#7DA0CA]">Projects</span> Measurable{" "}
                         <span className="text-[#7DA0CA]">Outcomes</span>
                     </h2>

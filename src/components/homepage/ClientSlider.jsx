@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { memo, useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, animate } from "framer-motion";
 import { DEFAULT_LOGOS, duplicatedLogos } from "./constants";
 
 /* ================= STATIC ANIMATIONS ================= */
@@ -23,10 +23,13 @@ const containerAnimation = {
 const ClientSlider = ({
   logos = DEFAULT_LOGOS,
   repeatCount = 3,
-  mobileSpeed = 12,
-  desktopSpeed = 16,
+  mobileSpeed = 20,
+  desktopSpeed = 20,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const x = useMotionValue(0);
+  const animationRef = useRef(null);
+  const infiniteLogos = duplicatedLogos(logos, repeatCount);
 
   /* -------- SSR-safe screen detection -------- */
   useEffect(() => {
@@ -39,7 +42,22 @@ const ClientSlider = ({
     return () => media.removeEventListener("change", handler);
   }, []);
 
-  const infiniteLogos = duplicatedLogos(logos, repeatCount);
+  /* -------- Single infinite animation (constant speed) -------- */
+  useEffect(() => {
+    const duration = isMobile ? mobileSpeed : desktopSpeed;
+
+    animationRef.current = animate(
+      x,
+      ["0%", "-33.33%"],
+      {
+        ease: "linear",
+        duration,
+        repeat: Infinity,
+      }
+    );
+
+    return () => animationRef.current?.stop();
+  }, [x, isMobile, mobileSpeed, desktopSpeed]);
 
   return (
     <motion.section
@@ -56,11 +74,12 @@ const ClientSlider = ({
       {/* TRACK */}
       <motion.div
         className="flex w-max gap-8 sm:gap-12 lg:gap-20 will-change-transform"
-        animate={{ x: ["0%", "-33.33%"] }}
-        transition={{
-          duration: isMobile ? mobileSpeed : desktopSpeed,
-          repeat: Infinity,
-          ease: "linear",
+        style={{ x }}
+        onHoverStart={() => {
+          if (!isMobile) animationRef.current?.pause();
+        }}
+        onHoverEnd={() => {
+          if (!isMobile) animationRef.current?.play();
         }}
       >
         {infiniteLogos.map((logo, index) => (

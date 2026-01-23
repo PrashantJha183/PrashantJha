@@ -4,7 +4,7 @@ import AboutIntro from "../aboutpage/AboutIntro";
 import Experience from "../aboutpage/Experience";
 import AboutService from "../aboutpage/AboutService";
 import Story from "../aboutpage/Story";
-
+import StatsCounter from "../aboutpage/StatsCounter";
 import ClientSlider from "../homepage/ClientSlider";
 import ErrorBoundary from "../base/ErrorBoundary";
 
@@ -138,7 +138,7 @@ const AboutPageView = () => {
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <ClientSlider />
+        <StatsCounter />
       </ErrorBoundary>
 
       <ErrorBoundary>

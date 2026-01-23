@@ -9,6 +9,9 @@ import logo7 from "../../assets/value.png";
 import logo8 from "../../assets/tre.jpeg";
 import logo9 from "../../assets/toast.png";
 import logo10 from "../../assets/HS.svg";
+import logo11 from "../../assets/PS.png";
+import logo12 from "../../assets/RR.svg";
+import logo13 from "../../assets/MR.svg";
 export const DEFAULT_LOGOS = Object.freeze([
   logo1,
   logo2,
@@ -20,6 +23,9 @@ export const DEFAULT_LOGOS = Object.freeze([
   logo8,
   logo9,
   logo10,
+  logo11,
+  logo12,
+  logo13,
 ]);
 
 export const duplicatedLogos = (logos, times = 3) =>
