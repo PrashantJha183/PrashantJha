@@ -10,6 +10,8 @@ export default defineConfig({
       includeAssets: ["favicon.svg", "robots.txt"],
 
       workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
         navigateFallback: "/index.html",
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,jpeg,webp}"],
 

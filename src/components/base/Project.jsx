@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Mail, MessageCircle, CheckCircle } from "lucide-react";
-import HandIcon from "../../assets/Optix DIgital Ai logo.svg";
+import HandIcon from "../../assets/logo.png";
 
 export default function Project() {
   const email = "jhaprashant.works@gmail.com";

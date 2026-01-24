@@ -1,18 +1,21 @@
 [build]
   command = "npm install --legacy-peer-deps && npm run build"
-
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# SPA Routing Support (React Router)
+# ================================
+# SPA Routing (React Router)
+# ================================
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Optional Headers for Security + PWA
+# ================================
+# Global Security Headers
+# ================================
 [[headers]]
   for = "/*"
   [headers.values]
@@ -22,14 +25,28 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# Cache static assets for performance
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# PWA service worker caching
+# ================================
+# PWA / Service Worker
+# VERY IMPORTANT
+# ================================
 [[headers]]
   for = "/sw.js"
   [headers.values]
-    Cache-Control = "no-cache"
+    Cache-Control = "no-store"
+
+# ================================
+# Allow Workbox to manage caching
+# DO NOT mark assets immutable
+# ================================
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ================================
+# Images (public + assets)
+# ================================
+[[headers]]
+  for = "/*.{png,jpg,jpeg,svg,webp,ico}"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
