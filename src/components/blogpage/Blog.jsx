@@ -55,7 +55,7 @@ const Blog = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="max-w-xl text-gray-600 text-sm sm:text-base mb-6"
             >
-                I’m currently working on this space to bring you meaningful articles on
+                I am currently working on this space to bring you meaningful articles on
                 web development, real-world projects, performance optimization, and
                 practical learnings.
                 <br />

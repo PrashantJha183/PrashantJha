@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Mail, MessageCircle, CheckCircle } from "lucide-react";
-import HandIcon from "../../assets/logo.png";
+import HandIcon from "../../assets/handshake.png";
 
 export default function Project() {
   const email = "jhaprashant.works@gmail.com";
@@ -37,7 +37,7 @@ export default function Project() {
         <img
           src={HandIcon}
           alt="Greeting Hand"
-          className="w-20 h-20 sm:w-24 sm:h-24 mb-6"
+          className="w-24 h-24 sm:w-32 sm:h-32 mb-6 rounded-full"
         />
 
         <h2 className="text-2xl sm:text-5xl font-semibold text-[#021024] mb-4">
