@@ -23,6 +23,7 @@ const ContactPageView = () => {
           content="Contact Full Stack Developer, Hire MERN Developer, Contact React Developer, Hire Web Developer, Freelance Full Stack Developer, Remote MERN Developer, Global Web Developer, SEO Friendly Website Developer, PWA Developer, Web Development Consultation"
         />
 
+
         {/* Indexing */}
         <meta name="robots" content="index, follow" />
         <meta name="googlebot" content="index, follow" />
@@ -98,12 +99,19 @@ const ContactPageView = () => {
             "@type": "ContactPage",
             name: "Contact Prashant Jha",
             url: "https://prashant-jhadev.netlify.app/contact",
+            description:
+              "Contact Prashant Jha, Full Stack MERN Developer, for SEO-optimized, high-performance web and PWA development services for global clients.",
             about: {
               "@type": "Person",
               name: "Prashant Jha",
               jobTitle: "Full Stack MERN Developer",
-              url: "https://prashant-jhadev.netlify.app/"
-            }
+              url: "https://prashant-jhadev.netlify.app/",
+              email: "mailto:jhaprashant.works@gmail.com",
+              sameAs: [
+                "https://www.linkedin.com/in/jhaprashant183/",
+                "https://github.com/PrashantJha183",
+              ],
+            },
           })}
         </script>
       </Helmet>

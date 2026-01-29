@@ -120,22 +120,32 @@ const ServicePageView = () => {
             "@type": "Service",
             name: "Full Stack Web Development Services",
             description:
-              "SEO-optimized, high-performance full stack web development services using React, Node.js, MongoDB, MySQL, and Progressive Web App technologies.",
+              "SEO-optimized, high-performance full stack web development services using React, Node.js, MongoDB, MySQL, and Progressive Web App technologies for startups and businesses worldwide.",
             provider: {
               "@type": "Person",
               name: "Prashant Jha",
               url: "https://prashant-jhadev.netlify.app/"
             },
-            areaServed: "Worldwide",
-            availableChannel: {
-              "@type": "ServiceChannel",
-              serviceLocation: {
-                "@type": "Place",
-                name: "Global"
+            areaServed: [
+              {
+                "@type": "Country",
+                name: "India"
+              },
+              {
+                "@type": "AdministrativeArea",
+                name: "Worldwide"
               }
-            }
+            ],
+            serviceType: [
+              "Full Stack Web Development",
+              "MERN Stack Development",
+              "React Development",
+              "Node.js Development",
+              "Progressive Web App Development"
+            ]
           })}
         </script>
+
       </Helmet>
       {/* ===================== SEO END ===================== */}
 

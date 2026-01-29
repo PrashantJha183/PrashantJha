@@ -15,7 +15,8 @@ const HomepageView = () => {
       <Helmet>
         {/* Primary SEO */}
         <title>
-          Prashant Jha | Full Stack MERN Developer | SEO-Friendly Web & PWA Solutions
+          Prashant Jha | Full Stack MERN Developer | SEO-Friendly Web & PWA
+          Solutions
         </title>
 
         <meta
@@ -37,10 +38,7 @@ const HomepageView = () => {
         <meta name="language" content="en" />
 
         {/* Canonical */}
-        <link
-          rel="canonical"
-          href="https://prashant-jhadev.netlify.app/"
-        />
+        <link rel="canonical" href="https://prashant-jhadev.netlify.app/" />
 
         {/* HREFLANG — GLOBAL TARGETING */}
         <link
@@ -102,25 +100,29 @@ const HomepageView = () => {
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Prashant Jha",
-            url: "https://prashant-jhadev.netlify.app/",
             jobTitle: "Full Stack MERN Developer",
+            url: "https://prashant-jhadev.netlify.app/",
+            image: "https://prashant-jhadev.netlify.app/logo.png",
             description:
               "Full Stack MERN Developer specializing in SEO-optimized, high-performance, PWA-ready web applications for global clients.",
             knowsAbout: [
               "React",
               "Node.js",
+              "Express.js",
               "MongoDB",
               "MySQL",
               "SEO Optimization",
               "Progressive Web Apps",
               "Performance Optimization",
-              "Netlify",
               "Vite",
-              "Tailwind CSS"
+              "Tailwind CSS",
+              "Render",
+              "MongoDB Atlas",
             ],
             sameAs: [
-              "https://github.com/PrashantJha183"
-            ]
+              "https://github.com/PrashantJha183",
+              "https://www.linkedin.com/in/jhaprashant183/",
+            ],
           })}
         </script>
 
@@ -128,16 +130,12 @@ const HomepageView = () => {
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: "Prashant Jha Portfolio",
+            "@type": "PersonalBrand",
+            name: "Prashant Jha",
             url: "https://prashant-jhadev.netlify.app/",
+            logo: "https://prashant-jhadev.netlify.app/logo.png",
+            image: "https://prashant-jhadev.netlify.app/logo.png",
             inLanguage: "en",
-            potentialAction: {
-              "@type": "SearchAction",
-              target:
-                "https://prashant-jhadev.netlify.app/?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
           })}
         </script>
       </Helmet>

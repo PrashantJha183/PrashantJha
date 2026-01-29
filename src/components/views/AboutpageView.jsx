@@ -70,7 +70,7 @@ const AboutPageView = () => {
         />
 
         {/* Open Graph */}
-        <meta property="og:type" content="profile" />
+        <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Prashant Jha Portfolio" />
         <meta
           property="og:title"
@@ -103,23 +103,28 @@ const AboutPageView = () => {
             "@type": "Person",
             name: "Prashant Jha",
             url: "https://prashant-jhadev.netlify.app/",
+            image: "https://prashant-jhadev.netlify.app/logo.png",
+            jobTitle: "Full Stack MERN Developer",
             description:
               "Full Stack MERN Developer specializing in SEO-optimized, high-performance, and PWA-ready web applications for global clients.",
-            jobTitle: "Full Stack MERN Developer",
             knowsAbout: [
               "React",
               "Node.js",
+              "Express.js",
               "MongoDB",
               "MySQL",
               "SEO Optimization",
               "Progressive Web Apps",
               "Performance Optimization",
+              "Vite",
               "Tailwind CSS",
-              "Netlify"
+              "Render",
+              "MongoDB Atlas",
             ],
             sameAs: [
-              "https://github.com/PrashantJha183"
-            ]
+              "https://github.com/PrashantJha183",
+              "https://www.linkedin.com/in/jhaprashant183/",
+            ],
           })}
         </script>
       </Helmet>

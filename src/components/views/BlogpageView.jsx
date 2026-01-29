@@ -10,9 +10,7 @@ const BlogPageView = () => {
 
   useEffect(() => {
     if (location.hash) {
-      const el = document.getElementById(
-        location.hash.replace("#", "")
-      );
+      const el = document.getElementById(location.hash.replace("#", ""));
       if (el) {
         el.scrollIntoView({
           behavior: "auto", // no smooth scroll
@@ -28,7 +26,8 @@ const BlogPageView = () => {
       <Helmet>
         {/* Primary SEO */}
         <title>
-          Blog & Insights | Full Stack MERN Development, SEO & Web Performance – Prashant Jha
+          Blog & Insights | Full Stack MERN Development, SEO & Web Performance –
+          Prashant Jha
         </title>
 
         <meta
@@ -50,10 +49,7 @@ const BlogPageView = () => {
         <meta name="language" content="en" />
 
         {/* Canonical */}
-        <link
-          rel="canonical"
-          href="https://prashant-jhadev.netlify.app/blog"
-        />
+        <link rel="canonical" href="https://prashant-jhadev.netlify.app/blog" />
 
         {/* HREFLANG — GLOBAL TARGETING */}
         <link
@@ -83,7 +79,7 @@ const BlogPageView = () => {
         />
 
         {/* Open Graph */}
-        <meta property="og:type" content="blog" />
+        <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Prashant Jha Portfolio" />
         <meta
           property="og:title"
@@ -100,10 +96,7 @@ const BlogPageView = () => {
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Blog & Insights | Prashant Jha"
-        />
+        <meta name="twitter:title" content="Blog & Insights | Prashant Jha" />
         <meta
           name="twitter:description"
           content="Technical blogs on full stack development, SEO, PWA, and web performance by Prashant Jha."
@@ -117,13 +110,21 @@ const BlogPageView = () => {
             name: "Prashant Jha – Tech Blog",
             url: "https://prashant-jhadev.netlify.app/blog",
             description:
-              "Technical articles and insights on MERN stack development, SEO optimization, and modern web performance.",
+              "Technical articles and insights on MERN stack development, React, Node.js, SEO optimization, PWA performance, and modern web engineering practices.",
+            inLanguage: "en",
             author: {
               "@type": "Person",
               name: "Prashant Jha",
-              url: "https://prashant-jhadev.netlify.app/"
+              url: "https://prashant-jhadev.netlify.app/",
             },
-            inLanguage: "en"
+            publisher: {
+              "@type": "PersonalBrand",
+              name: "Prashant Jha",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://prashant-jhadev.netlify.app/logo.png",
+              },
+            },
           })}
         </script>
       </Helmet>
