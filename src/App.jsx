@@ -11,13 +11,22 @@ import ErrorBoundary from "./components/base/ErrorBoundary";
 import SkeletonLoader from "./components/base/SkeletonLoader";
 import OfflineInfoModal from "./components/base/OfflineInfoModal";
 
-// Lazy Components
+/* =========================
+   AUTH
+========================= */
+import { AuthProvider } from "../src/context/AuthContext";
+import ProtectedRoute from "../src/components/ProtectedRoute";
+
+/* =========================
+   LAZY COMPONENTS
+========================= */
 const Header = lazy(() =>
   import("./components/base/Header").catch(() => ({ default: () => null }))
 );
 const Footer = lazy(() =>
   import("./components/base/Footer").catch(() => ({ default: () => null }))
 );
+
 const TermsAndConditions = lazy(() =>
   import("./components/base/TermsAndConditions").catch(() => ({
     default: () => null,
@@ -36,6 +45,7 @@ const Disclaimer = lazy(() =>
 const Project = lazy(() =>
   import("./components/base/Project").catch(() => ({ default: () => null }))
 );
+
 const Home = lazy(() =>
   import("./components/views/HomepageView").catch(() => ({
     default: () => null,
@@ -62,14 +72,29 @@ const Service = lazy(() =>
   }))
 );
 
+/* =========================
+   AUTH PAGES
+========================= */
+const Login = lazy(() =>
+  import("../src/components/base/Login").catch(() => ({ default: () => null }))
+);
+// const Dashboard = lazy(() =>
+//   import("../src/dashboard/AdminDashboard").catch(() => ({ default: () => null }))
+// );
+// const Unauthorized = lazy(() =>
+//   import("./pages/Unauthorized").catch(() => ({ default: () => null }))
+// );
+
 //////////////////////////
 // ScrollToTop Component
 //////////////////////////
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+
   React.useEffect(() => {
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [pathname]);
+
   return null;
 };
 
@@ -92,44 +117,64 @@ const AppLayout = () => {
         <link rel="canonical" href="https://prashant-jhadev.netlify.app/" />
       </Helmet>
 
-      {/* GLOBAL OFFLINE INFO MODAL */}
+      {/* GLOBAL OFFLINE INFO */}
       <OfflineInfoModal />
 
       <ScrollToTop />
 
-      {/* Header */}
+      {/* HEADER */}
       <Suspense fallback={<SkeletonLoader />}>
         <ErrorBoundary>
           <Header />
         </ErrorBoundary>
       </Suspense>
 
-      {/* MAIN CONTENT (SEO landmark) */}
+      {/* MAIN CONTENT */}
       <main id="main-content">
         <Suspense fallback={<SkeletonLoader />}>
           <Routes>
+            {/* PUBLIC ROUTES */}
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Service />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
+
             <Route
               path="/terms-and-conditions"
               element={<TermsAndConditions />}
             />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
+
+            {/* AUTH */}
+            <Route path="/login" element={<Login />} />
+
+            {/* PROTECTED */}
+            {/* <Route
+              path="/dashboard/*"
+              element={
+                <ProtectedRoute roles={["admin", "editor", "writer"]}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            /> */}
+
+
+            {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
           </Routes>
         </Suspense>
       </main>
 
-      {/* Project (hidden on specific pages) */}
+      {/* PROJECT SECTION */}
       {![
         "/contact",
         "/blog",
         "/terms-and-conditions",
         "/privacy-policy",
         "/disclaimer",
+        "/login",
+        "/dashboard",
       ].includes(location.pathname) && (
           <Suspense fallback={<SkeletonLoader />}>
             <ErrorBoundary>
@@ -138,7 +183,7 @@ const AppLayout = () => {
           </Suspense>
         )}
 
-      {/* Footer */}
+      {/* FOOTER */}
       <Suspense fallback={<SkeletonLoader />}>
         <ErrorBoundary>
           <Footer />
@@ -153,7 +198,9 @@ const AppLayout = () => {
 //////////////////////////
 const AppContent = () => (
   <Router basename="/">
-    <AppLayout />
+    <AuthProvider>
+      <AppLayout />
+    </AuthProvider>
   </Router>
 );
 
