@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { api } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
@@ -12,10 +12,19 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const inputsRef = useRef([]);
+    const abortRef = useRef(null);
+
     const { setUser } = useAuth();
     const navigate = useNavigate();
 
-    /* ================= SEND OTP ================= */
+    useEffect(() => {
+        return () => {
+            if (abortRef.current) {
+                abortRef.current.abort();
+            }
+        };
+    }, []);
+
     const sendOtp = async () => {
         if (!email.includes("@")) {
             setError("Please enter a valid email address");
@@ -23,76 +32,90 @@ export default function Login() {
         }
 
         try {
+            abortRef.current = new AbortController();
             setLoading(true);
             setError("");
-            await api.post("/auth/send-otp", { email });
+
+            await api.post(
+                "/auth/send-otp",
+                { email },
+                { signal: abortRef.current.signal }
+            );
+
             setStep("otp");
-        } catch {
-            setError("Failed to send OTP. Try again.");
+        } catch (err) {
+            if (err.name !== "CanceledError") {
+                setError("Failed to send OTP. Try again.");
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    /* ================= VERIFY OTP ================= */
     const verifyOtp = async () => {
         const code = otp.join("");
+
         if (code.length !== 6) {
             setError("Enter 6 digit OTP");
             return;
         }
 
         try {
+            abortRef.current = new AbortController();
             setLoading(true);
             setError("");
 
-            const { data } = await api.post("/auth/verify-otp", {
-                email,
-                otp: code,
-            });
+            const res = await api.post(
+                "/auth/verify-otp",
+                { email, otp: code },
+                { signal: abortRef.current.signal }
+            );
 
-            localStorage.setItem("accessToken", data.accessToken);
-            localStorage.setItem("refreshToken", data.refreshToken);
-            localStorage.setItem("role", data.user.role);
+            localStorage.setItem("accessToken", res.data.accessToken);
+            localStorage.setItem("refreshToken", res.data.refreshToken);
+            localStorage.setItem("role", res.data.user.role);
 
-            setUser(data.user);
-
+            setUser(res.data.user);
             navigate("/dashboard");
-        } catch {
-            setError("Invalid or expired OTP");
+        } catch (err) {
+            if (err.name !== "CanceledError") {
+                setError("Invalid or expired OTP");
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    /* ================= OTP INPUT HANDLER ================= */
     const handleOtpChange = (value, index) => {
         if (!/^\d?$/.test(value)) return;
 
-        const newOtp = [...otp];
-        newOtp[index] = value;
-        setOtp(newOtp);
+        const nextOtp = [...otp];
+        nextOtp[index] = value;
+        setOtp(nextOtp);
 
         if (value && index < 5) {
-            inputsRef.current[index + 1].focus();
+            inputsRef.current[index + 1]?.focus();
         }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 new-font">
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="bg-white p-8 rounded-xl shadow-md w-full max-w-md"
             >
-                <h2 className="text-2xl font-semibold text-center mb-6">
+                <h1 className="text-2xl font-semibold text-center mb-6">
                     Admin Login
-                </h2>
+                </h1>
 
                 {step === "email" && (
                     <>
                         <input
                             type="email"
+                            inputMode="email"
+                            autoComplete="email"
                             placeholder="Enter email"
                             className="w-full p-3 border rounded mb-4"
                             value={email}
@@ -117,6 +140,7 @@ export default function Login() {
                                     key={i}
                                     ref={(el) => (inputsRef.current[i] = el)}
                                     value={digit}
+                                    inputMode="numeric"
                                     maxLength={1}
                                     onChange={(e) =>
                                         handleOtpChange(e.target.value, i)

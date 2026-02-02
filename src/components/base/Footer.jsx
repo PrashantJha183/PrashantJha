@@ -166,11 +166,11 @@ const Footer = () => {
                 </Link>
               </li>
               {/* Optional but recommended */}
-              {/* <li>
-                <Link to="/cookies-policy" className="hover:underline">
-                  Cookies Policy
+              <li>
+                <Link to="/login" className="hover:underline">
+                  Login
                 </Link>
-              </li> */}
+              </li>
             </ul>
           </div>
 

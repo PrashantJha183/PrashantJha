@@ -78,12 +78,24 @@ const Service = lazy(() =>
 const Login = lazy(() =>
   import("../src/components/base/Login").catch(() => ({ default: () => null }))
 );
-// const Dashboard = lazy(() =>
-//   import("../src/dashboard/AdminDashboard").catch(() => ({ default: () => null }))
-// );
-// const Unauthorized = lazy(() =>
-//   import("./pages/Unauthorized").catch(() => ({ default: () => null }))
-// );
+const Dashboard = lazy(() =>
+  import("../src/admin/layout/AdminLayout").catch(() => ({ default: () => null }))
+);
+
+const AdminDashboard = lazy(() =>
+  import("../src/admin/pages/Dashboard").catch(() => ({ default: () => null }))
+);
+
+const AdminBlogs = lazy(() =>
+  import("../src/admin/pages/Blogs").catch(() => ({ default: () => null }))
+);
+
+const AdminUsers = lazy(() =>
+  import("../src/admin/pages/Users").catch(() => ({ default: () => null }))
+);
+const Unauthorized = lazy(() =>
+  import("../src/admin/pages/Unauthorized").catch(() => ({ default: () => null }))
+);
 
 //////////////////////////
 // ScrollToTop Component
@@ -92,7 +104,7 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   React.useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0 });
   }, [pathname]);
 
   return null;
@@ -151,17 +163,21 @@ const AppLayout = () => {
             <Route path="/login" element={<Login />} />
 
             {/* PROTECTED */}
-            {/* <Route
+            <Route
               path="/dashboard/*"
               element={
-                <ProtectedRoute roles={["admin", "editor", "writer"]}>
+                <ProtectedRoute roles={["admin"]}>
                   <Dashboard />
                 </ProtectedRoute>
               }
-            /> */}
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="blogs" element={<AdminBlogs />} />
+              <Route path="users" element={<AdminUsers />} />
+            </Route>
 
+            <Route path="/unauthorized" element={<div>Unauthorized</div>} />
 
-            {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
           </Routes>
         </Suspense>
       </main>
@@ -175,6 +191,7 @@ const AppLayout = () => {
         "/disclaimer",
         "/login",
         "/dashboard",
+        "/dashboard/users", "/dashboard/blogs"
       ].includes(location.pathname) && (
           <Suspense fallback={<SkeletonLoader />}>
             <ErrorBoundary>
