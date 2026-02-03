@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { api } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 import { Pencil, Trash2, ImagePlus } from "lucide-react";
@@ -29,6 +29,11 @@ export default function AdminBlogs() {
         videos: [],
         audios: [],
     });
+
+    const imageInputRef = useRef(null);
+    const videoInputRef = useRef(null);
+    const audioInputRef = useRef(null);
+
 
     /* ================= FETCH BLOGS ================= */
     useEffect(() => {
@@ -80,9 +85,40 @@ export default function AdminBlogs() {
     };
 
     const createBlog = async () => {
+        // BASIC VALIDATION
+        if (!formData.title.trim() || !formData.description.trim()) {
+            alert("Title and description are required");
+            return;
+        }
+
+        const hasLocalFiles =
+            mediaFiles.images.length ||
+            mediaFiles.videos.length ||
+            mediaFiles.audios.length;
+
+        // 🔵 CASE 1: JSON ONLY (manual testing / URLs)
+        if (!hasLocalFiles) {
+            const payload = {
+                title: formData.title.trim(),
+                description: formData.description.trim(),
+                status: formData.status,
+                images: formData.images || [],
+                videos: formData.videos || [],
+                audios: formData.audios || [],
+            };
+
+            const res = await api.post("/blogs", payload);
+
+            const blog = res.data.blog || res.data.data || res.data;
+            setBlogs((prev) => [blog, ...prev]);
+            setShowFormModal(false);
+            return;
+        }
+
+        // 🟢 CASE 2: LOCAL FILE UPLOAD (multipart)
         const form = new FormData();
-        form.append("title", formData.title);
-        form.append("description", formData.description);
+        form.append("title", formData.title.trim());
+        form.append("description", formData.description.trim());
         form.append("status", formData.status);
 
         mediaFiles.images.forEach((f) => form.append("images", f));
@@ -93,30 +129,97 @@ export default function AdminBlogs() {
             headers: { "Content-Type": "multipart/form-data" },
         });
 
-        setBlogs((prev) => [res.data.blog, ...prev]);
+        const blog = res.data.blog || res.data.data || res.data;
+        setBlogs((prev) => [blog, ...prev]);
         setShowFormModal(false);
     };
+
+
 
     const updateBlog = async () => {
-        const res = await api.put(`/blogs/${selectedBlog.id}`, formData);
+        const payload = {
+            title: formData.title.trim(),
+            description: formData.description.trim(),
+            status: formData.status,
+        };
+
+        const res = await api.put(`/blogs/${selectedBlog.id}`, payload);
+
+        const updated =
+            res.data?.data ||
+            res.data?.blog ||
+            res.data;
+
         setBlogs((prev) =>
-            prev.map((b) => (b.id === selectedBlog.id ? res.data.blog : b))
+            prev.map((b) => (b.id === selectedBlog.id ? updated : b))
         );
+
         setShowFormModal(false);
     };
 
+
     const updateMedia = async () => {
+        const { images, videos, audios } = mediaFiles;
+
+        const hasFiles =
+            images.length > 0 ||
+            videos.length > 0 ||
+            audios.length > 0;
+
+        if (!hasFiles) {
+            console.warn("No media selected. Aborting request.");
+            return; // 🚫 ABSOLUTELY NO API CALL
+        }
+
         const form = new FormData();
-        mediaFiles.images.forEach((f) => form.append("images", f));
-        mediaFiles.videos.forEach((f) => form.append("videos", f));
-        mediaFiles.audios.forEach((f) => form.append("audios", f));
 
-        await api.patch(`/blogs/${selectedBlog.id}/media`, form, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        images.forEach((f) => form.append("images", f));
+        videos.forEach((f) => form.append("videos", f));
+        audios.forEach((f) => form.append("audios", f));
 
-        setShowMediaModal(false);
+        try {
+            // 🔥 Guard: do not send empty FormData
+            const hasFiles =
+                form.getAll("images").length ||
+                form.getAll("videos").length ||
+                form.getAll("audios").length;
+
+            if (!hasFiles) {
+                console.warn("No media selected, skipping upload");
+                return;
+            }
+
+            // ✅ IMPORTANT FIX: upload media goes to /blogs/:id (NOT /media)
+            const res = await api.patch(
+                `/blogs/${selectedBlog.id}/media`,
+                form,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            const updatedBlog = res.data.blog;
+
+            setBlogs((prev) =>
+                prev.map((b) =>
+                    b.id === updatedBlog.id ? updatedBlog : b
+                )
+            );
+
+            setShowMediaModal(false);
+            setMediaFiles({ images: [], videos: [], audios: [] });
+
+        } catch (err) {
+            console.error(
+                "Media upload failed",
+                err.response?.data || err.message
+            );
+        }
+
     };
+
 
     const deleteBlog = async () => {
         await api.delete(`/blogs/${selectedBlog.id}`);
@@ -270,12 +373,13 @@ export default function AdminBlogs() {
                             <input
                                 type="file"
                                 multiple
-                                onChange={(e) =>
-                                    setMediaFiles({
-                                        ...mediaFiles,
-                                        images: [...e.target.files],
-                                    })
-                                }
+                                onChange={(e) => {
+                                    const files = Array.from(e.target.files);
+                                    setMediaFiles((prev) => ({
+                                        ...prev,
+                                        images: files,
+                                    }));
+                                }}
                                 className="w-full text-sm"
                             />
                         </div>

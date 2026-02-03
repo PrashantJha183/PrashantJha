@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { api } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
@@ -13,46 +13,60 @@ export default function Login() {
 
     const inputsRef = useRef([]);
     const abortRef = useRef(null);
+    const debounceRef = useRef(null);
 
     const { setUser } = useAuth();
     const navigate = useNavigate();
 
+    /* ================= SEO (SAFE FOR ADMIN) ================= */
+    useEffect(() => {
+        document.title = "Admin Login";
+    }, []);
+
+    /* ================= CLEANUP ================= */
     useEffect(() => {
         return () => {
-            if (abortRef.current) {
-                abortRef.current.abort();
-            }
+            abortRef.current?.abort();
+            debounceRef.current && clearTimeout(debounceRef.current);
         };
     }, []);
 
-    const sendOtp = async () => {
+    /* ================= SEND OTP (DEBOUNCED) ================= */
+    const sendOtp = useCallback(() => {
         if (!email.includes("@")) {
             setError("Please enter a valid email address");
             return;
         }
 
-        try {
-            abortRef.current = new AbortController();
-            setLoading(true);
-            setError("");
+        clearTimeout(debounceRef.current);
 
-            await api.post(
-                "/auth/send-otp",
-                { email },
-                { signal: abortRef.current.signal }
-            );
+        debounceRef.current = setTimeout(async () => {
+            try {
+                abortRef.current?.abort();
+                abortRef.current = new AbortController();
 
-            setStep("otp");
-        } catch (err) {
-            if (err.name !== "CanceledError") {
-                setError("Failed to send OTP. Try again.");
+                setLoading(true);
+                setError("");
+
+                await api.post(
+                    "/auth/send-otp",
+                    { email },
+                    { signal: abortRef.current.signal },
+                );
+
+                setStep("otp");
+            } catch (err) {
+                if (err.name !== "CanceledError") {
+                    setError("Failed to send OTP. Try again.");
+                }
+            } finally {
+                setLoading(false);
             }
-        } finally {
-            setLoading(false);
-        }
-    };
+        }, 500);
+    }, [email]);
 
-    const verifyOtp = async () => {
+    /* ================= VERIFY OTP (DEBOUNCED) ================= */
+    const verifyOtp = useCallback(() => {
         const code = otp.join("");
 
         if (code.length !== 6) {
@@ -60,32 +74,39 @@ export default function Login() {
             return;
         }
 
-        try {
-            abortRef.current = new AbortController();
-            setLoading(true);
-            setError("");
+        clearTimeout(debounceRef.current);
 
-            const res = await api.post(
-                "/auth/verify-otp",
-                { email, otp: code },
-                { signal: abortRef.current.signal }
-            );
+        debounceRef.current = setTimeout(async () => {
+            try {
+                abortRef.current?.abort();
+                abortRef.current = new AbortController();
 
-            localStorage.setItem("accessToken", res.data.accessToken);
-            localStorage.setItem("refreshToken", res.data.refreshToken);
-            localStorage.setItem("role", res.data.user.role);
+                setLoading(true);
+                setError("");
 
-            setUser(res.data.user);
-            navigate("/dashboard");
-        } catch (err) {
-            if (err.name !== "CanceledError") {
-                setError("Invalid or expired OTP");
+                const res = await api.post(
+                    "/auth/verify-otp",
+                    { email, otp: code },
+                    { signal: abortRef.current.signal },
+                );
+
+                localStorage.setItem("accessToken", res.data.accessToken);
+                localStorage.setItem("refreshToken", res.data.refreshToken);
+                localStorage.setItem("role", res.data.user.role);
+
+                setUser(res.data.user);
+                navigate("/dashboard");
+            } catch (err) {
+                if (err.name !== "CanceledError") {
+                    setError("Invalid or expired OTP");
+                }
+            } finally {
+                setLoading(false);
             }
-        } finally {
-            setLoading(false);
-        }
-    };
+        }, 500);
+    }, [otp, email, navigate, setUser]);
 
+    /* ================= OTP INPUT ================= */
     const handleOtpChange = (value, index) => {
         if (!/^\d?$/.test(value)) return;
 
@@ -99,16 +120,17 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 new-font">
+        <div className="bg-[#052659] h-[70vh] md:h-[65vh] rounded-b flex items-center justify-center new-font px-4 sm:px-6 m-2">
             <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="bg-white p-8 rounded-xl shadow-md w-full max-w-md"
+                transition={{
+                    duration: 0.35,
+                    ease: [0.34, 1.56, 0.64, 1], // spring-like
+                }}
+                className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-md"
             >
-                <h1 className="text-2xl font-semibold text-center mb-6">
-                    Admin Login
-                </h1>
+                <h1 className="text-2xl font-semibold text-center mb-6">Admin Login</h1>
 
                 {step === "email" && (
                     <>
@@ -125,7 +147,7 @@ export default function Login() {
                         <button
                             onClick={sendOtp}
                             disabled={loading}
-                            className="w-full bg-black text-white p-3 rounded"
+                            className="w-full bg-[#021024] text-white p-3 rounded disabled:opacity-60"
                         >
                             {loading ? "Sending OTP..." : "Send OTP"}
                         </button>
@@ -134,7 +156,7 @@ export default function Login() {
 
                 {step === "otp" && (
                     <>
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between gap-2 mb-4">
                             {otp.map((digit, i) => (
                                 <input
                                     key={i}
@@ -142,9 +164,7 @@ export default function Login() {
                                     value={digit}
                                     inputMode="numeric"
                                     maxLength={1}
-                                    onChange={(e) =>
-                                        handleOtpChange(e.target.value, i)
-                                    }
+                                    onChange={(e) => handleOtpChange(e.target.value, i)}
                                     className="w-10 h-12 border text-center text-lg rounded"
                                 />
                             ))}
@@ -153,7 +173,7 @@ export default function Login() {
                         <button
                             onClick={verifyOtp}
                             disabled={loading}
-                            className="w-full bg-black text-white p-3 rounded"
+                            className="w-full bg-[#021024] text-white p-3 rounded disabled:opacity-60"
                         >
                             {loading ? "Verifying..." : "Verify OTP"}
                         </button>
@@ -161,9 +181,7 @@ export default function Login() {
                 )}
 
                 {error && (
-                    <p className="text-red-500 text-sm mt-4 text-center">
-                        {error}
-                    </p>
+                    <p className="text-red-500 text-sm mt-4 text-center">{error}</p>
                 )}
             </motion.div>
         </div>

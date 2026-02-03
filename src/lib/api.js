@@ -3,9 +3,6 @@ import axios from "axios";
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 /* ================================
@@ -15,11 +12,22 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
 
+    // 🔐 Attach access token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       console.log("Access token attached");
+    }
+
+    /**
+     * 🧠 IMPORTANT:
+     * If body is FormData → DO NOT set Content-Type
+     * Axios will automatically set multipart/form-data with boundary
+     */
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
     } else {
-      console.warn("No access token found");
+      // Default for JSON APIs
+      config.headers["Content-Type"] = "application/json";
     }
 
     return config;
@@ -43,7 +51,7 @@ api.interceptors.response.use(
 
     const originalRequest = error.config;
 
-    // Handle expired access token
+    // 🔁 Handle expired access token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       console.warn("Access token expired. Trying refresh...");
@@ -52,13 +60,13 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken");
 
         if (!refreshToken) {
-          console.error("No refresh token found");
-          throw new Error("No refresh token");
+          throw new Error("No refresh token found");
         }
 
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
           { refreshToken },
+          { withCredentials: true },
         );
 
         localStorage.setItem("accessToken", res.data.accessToken);
