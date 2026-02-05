@@ -109,25 +109,35 @@ const ScrollToTop = () => {
 
   return null;
 };
+const getCanonicalUrl = (pathname) => {
+  const base = "https://prashantjhadev.in";
+  return pathname === "/" ? base : `${base}${pathname}`;
+};
 
 //////////////////////////
 // App Layout
 //////////////////////////
 const AppLayout = () => {
   const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
 
   return (
     <>
       {/* GLOBAL SEO FALLBACK */}
       <Helmet>
         <title>Prashant Jha | Full Stack MERN Developer</title>
+
         <meta
           name="description"
-          content="Full Stack MERN Developer building fast, accessible, and reliable web experiences for users across devices and networks."
+          content="Prashant Jha is a Full Stack MERN Developer building fast, scalable, SEO-friendly frontend and backend web applications for global users."
         />
+
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://prashant-jhadev.netlify.app/" />
+
+        {/* FIXED CANONICAL */}
+        <link rel="canonical" href={canonicalUrl} />
       </Helmet>
+
 
       {/* GLOBAL OFFLINE INFO */}
       <OfflineInfoModal />

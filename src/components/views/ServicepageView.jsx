@@ -53,36 +53,21 @@ const ServicePageView = () => {
         <meta name="author" content="Prashant Jha" />
         <meta name="language" content="en" />
 
-        {/* Canonical */}
+        {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashant-jhadev.netlify.app/services"
+          href="https://prashantjhadev.in/services"
         />
 
-        {/* HREFLANG — GLOBAL TARGETING */}
+        {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/services"
+          href="https://prashantjhadev.in/services"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/services"
-          hrefLang="en-IN"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/services"
-          hrefLang="en-US"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/services"
-          hrefLang="en-GB"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/services"
+          href="https://prashantjhadev.in/services"
           hrefLang="x-default"
         />
 
@@ -99,7 +84,7 @@ const ServicePageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashant-jhadev.netlify.app/services"
+          content="https://prashantjhadev.in/services"
         />
 
         {/* Twitter */}
@@ -124,18 +109,12 @@ const ServicePageView = () => {
             provider: {
               "@type": "Person",
               name: "Prashant Jha",
-              url: "https://prashant-jhadev.netlify.app/"
+              url: "https://prashantjhadev.in/"
             },
-            areaServed: [
-              {
-                "@type": "Country",
-                name: "India"
-              },
-              {
-                "@type": "AdministrativeArea",
-                name: "Worldwide"
-              }
-            ],
+            areaServed: {
+              "@type": "AdministrativeArea",
+              name: "Worldwide"
+            },
             serviceType: [
               "Full Stack Web Development",
               "MERN Stack Development",

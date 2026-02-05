@@ -36,36 +36,21 @@ const AboutPageView = () => {
         <meta name="author" content="Prashant Jha" />
         <meta name="language" content="en" />
 
-        {/* Canonical */}
+        {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashant-jhadev.netlify.app/about"
+          href="https://prashantjhadev.in/about"
         />
 
-        {/* HREFLANG — GLOBAL TARGETING */}
+        {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/about"
+          href="https://prashantjhadev.in/about"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/about"
-          hrefLang="en-IN"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/about"
-          hrefLang="en-US"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/about"
-          hrefLang="en-GB"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/about"
+          href="https://prashantjhadev.in/about"
           hrefLang="x-default"
         />
 
@@ -82,7 +67,7 @@ const AboutPageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashant-jhadev.netlify.app/about"
+          content="https://prashantjhadev.in/about"
         />
 
         {/* Twitter */}
@@ -102,8 +87,8 @@ const AboutPageView = () => {
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Prashant Jha",
-            url: "https://prashant-jhadev.netlify.app/",
-            image: "https://prashant-jhadev.netlify.app/logo.png",
+            url: "https://prashantjhadev.in/",
+            image: "https://prashantjhadev.in/logo.png",
             jobTitle: "Full Stack MERN Developer",
             description:
               "Full Stack MERN Developer specializing in SEO-optimized, high-performance, and PWA-ready web applications for global clients.",
@@ -117,14 +102,12 @@ const AboutPageView = () => {
               "Progressive Web Apps",
               "Performance Optimization",
               "Vite",
-              "Tailwind CSS",
-              "Render",
-              "MongoDB Atlas",
+              "Tailwind CSS"
             ],
             sameAs: [
               "https://github.com/PrashantJha183",
-              "https://www.linkedin.com/in/jhaprashant183/",
-            ],
+              "https://www.linkedin.com/in/jhaprashant183/"
+            ]
           })}
         </script>
       </Helmet>

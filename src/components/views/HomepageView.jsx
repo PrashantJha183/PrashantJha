@@ -26,7 +26,7 @@ const HomepageView = () => {
 
         <meta
           name="keywords"
-          content="Full Stack Developer, MERN Stack Developer, React Developer, Node.js Developer, JavaScript Developer, SEO Friendly Website Developer, Progressive Web App Developer, PWA Developer, Performance Optimized Websites, Freelance Web Developer, Remote Full Stack Developer, Global Web Developer, React Vite Developer, Tailwind CSS Developer, MongoDB Developer, MySQL Developer, Startup Website Developer, Business Website Developer, Secure Web Applications, Netlify Hosting"
+          content="Full Stack Developer, MERN Stack Developer, React Developer, Node.js Developer, JavaScript Developer, SEO Friendly Website Developer, Progressive Web App Developer, PWA Developer, Performance Optimized Websites, Freelance Web Developer, Remote Full Stack Developer, Global Web Developer, React Vite Developer, Tailwind CSS Developer, MongoDB Developer, MySQL Developer"
         />
 
         {/* Indexing */}
@@ -37,33 +37,18 @@ const HomepageView = () => {
         <meta name="author" content="Prashant Jha" />
         <meta name="language" content="en" />
 
-        {/* Canonical */}
-        <link rel="canonical" href="https://prashant-jhadev.netlify.app/" />
+        {/* FIXED CANONICAL */}
+        <link rel="canonical" href="https://prashantjhadev.in/" />
 
-        {/* HREFLANG — GLOBAL TARGETING */}
+        {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/"
+          href="https://prashantjhadev.in/"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/"
-          hrefLang="en-IN"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/"
-          hrefLang="en-US"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/"
-          hrefLang="en-GB"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/"
+          href="https://prashantjhadev.in/"
           hrefLang="x-default"
         />
 
@@ -78,10 +63,7 @@ const HomepageView = () => {
           property="og:description"
           content="SEO-friendly, high-performance MERN stack applications and PWA solutions trusted by global clients."
         />
-        <meta
-          property="og:url"
-          content="https://prashant-jhadev.netlify.app/"
-        />
+        <meta property="og:url" content="https://prashantjhadev.in/" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -101,8 +83,8 @@ const HomepageView = () => {
             "@type": "Person",
             name: "Prashant Jha",
             jobTitle: "Full Stack MERN Developer",
-            url: "https://prashant-jhadev.netlify.app/",
-            image: "https://prashant-jhadev.netlify.app/logo.png",
+            url: "https://prashantjhadev.in/",
+            image: "https://prashantjhadev.in/logo.png",
             description:
               "Full Stack MERN Developer specializing in SEO-optimized, high-performance, PWA-ready web applications for global clients.",
             knowsAbout: [
@@ -116,8 +98,6 @@ const HomepageView = () => {
               "Performance Optimization",
               "Vite",
               "Tailwind CSS",
-              "Render",
-              "MongoDB Atlas",
             ],
             sameAs: [
               "https://github.com/PrashantJha183",
@@ -126,16 +106,14 @@ const HomepageView = () => {
           })}
         </script>
 
-        {/* STRUCTURED DATA — WEBSITE */}
+        {/* STRUCTURED DATA — BRAND */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "PersonalBrand",
+            "@type": "Brand",
             name: "Prashant Jha",
-            url: "https://prashant-jhadev.netlify.app/",
-            logo: "https://prashant-jhadev.netlify.app/logo.png",
-            image: "https://prashant-jhadev.netlify.app/logo.png",
-            inLanguage: "en",
+            url: "https://prashantjhadev.in/",
+            logo: "https://prashantjhadev.in/logo.png",
           })}
         </script>
       </Helmet>

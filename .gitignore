@@ -1,5 +1,30 @@
+# ===============================
+# Dependencies
+# ===============================
+node_modules/
+bower_components/
+
+# ===============================
+# Build outputs
+# ===============================
+dist/
+dist-ssr/
+build/
+.out/
+.next/
+coverage/
+
+# ===============================
+# Environment variables (CRITICAL)
+# ===============================
+.env
+.env.*
+!.env.example
+
+# ===============================
 # Logs
-logs
+# ===============================
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +32,62 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ===============================
+# Runtime data
+# ===============================
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Editor directories and files
+# ===============================
+# OS / Editor junk
+# ===============================
+.DS_Store
+Thumbs.db
+
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ===============================
+# Caches
+# ===============================
+.cache/
+.eslintcache
+.stylelintcache
+.parcel-cache/
+
+# ===============================
+# Test & tooling
+# ===============================
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+
+# ===============================
+# Temporary & local files
+# ===============================
+*.local
+*.tmp
+*.temp
+
+# ===============================
+# Docker
+# ===============================
+docker-compose.override.yml
+
+# ===============================
+# Package manager files (optional)
+# ===============================
+# Uncomment if you DON'T want lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

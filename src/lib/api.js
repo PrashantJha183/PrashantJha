@@ -6,27 +6,39 @@ export const api = axios.create({
 });
 
 /* ================================
+   PUBLIC ENDPOINTS (NO AUTH)
+================================ */
+const PUBLIC_ENDPOINTS = [
+  "/auth/send-otp",
+  "/auth/verify-otp",
+  "/auth/refresh-token",
+  "/public-blogs",
+];
+
+/* ================================
    REQUEST INTERCEPTOR
 ================================ */
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
 
-    // 🔐 Attach access token
-    if (token) {
+    const isPublicEndpoint = PUBLIC_ENDPOINTS.some((endpoint) =>
+      config.url?.includes(endpoint),
+    );
+
+    // Attach access token ONLY for protected APIs
+    if (token && !isPublicEndpoint) {
       config.headers.Authorization = `Bearer ${token}`;
       console.log("Access token attached");
     }
 
     /**
-     * 🧠 IMPORTANT:
+     * IMPORTANT:
      * If body is FormData → DO NOT set Content-Type
-     * Axios will automatically set multipart/form-data with boundary
      */
     if (config.data instanceof FormData) {
       delete config.headers["Content-Type"];
     } else {
-      // Default for JSON APIs
       config.headers["Content-Type"] = "application/json";
     }
 
@@ -51,8 +63,16 @@ api.interceptors.response.use(
 
     const originalRequest = error.config;
 
-    // 🔁 Handle expired access token
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isPublicEndpoint = PUBLIC_ENDPOINTS.some((endpoint) =>
+      originalRequest?.url?.includes(endpoint),
+    );
+
+    // Handle expired access token (ONLY for protected routes)
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isPublicEndpoint
+    ) {
       originalRequest._retry = true;
       console.warn("Access token expired. Trying refresh...");
 

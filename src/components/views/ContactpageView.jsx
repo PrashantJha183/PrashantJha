@@ -23,7 +23,6 @@ const ContactPageView = () => {
           content="Contact Full Stack Developer, Hire MERN Developer, Contact React Developer, Hire Web Developer, Freelance Full Stack Developer, Remote MERN Developer, Global Web Developer, SEO Friendly Website Developer, PWA Developer, Web Development Consultation"
         />
 
-
         {/* Indexing */}
         <meta name="robots" content="index, follow" />
         <meta name="googlebot" content="index, follow" />
@@ -32,36 +31,21 @@ const ContactPageView = () => {
         <meta name="author" content="Prashant Jha" />
         <meta name="language" content="en" />
 
-        {/* Canonical */}
+        {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashant-jhadev.netlify.app/contact"
+          href="https://prashantjhadev.in/contact"
         />
 
-        {/* HREFLANG — GLOBAL TARGETING */}
+        {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/contact"
+          href="https://prashantjhadev.in/contact"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashant-jhadev.netlify.app/contact"
-          hrefLang="en-IN"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/contact"
-          hrefLang="en-US"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/contact"
-          hrefLang="en-GB"
-        />
-        <link
-          rel="alternate"
-          href="https://prashant-jhadev.netlify.app/contact"
+          href="https://prashantjhadev.in/contact"
           hrefLang="x-default"
         />
 
@@ -78,7 +62,7 @@ const ContactPageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashant-jhadev.netlify.app/contact"
+          content="https://prashantjhadev.in/contact"
         />
 
         {/* Twitter */}
@@ -98,20 +82,20 @@ const ContactPageView = () => {
             "@context": "https://schema.org",
             "@type": "ContactPage",
             name: "Contact Prashant Jha",
-            url: "https://prashant-jhadev.netlify.app/contact",
+            url: "https://prashantjhadev.in/contact",
             description:
               "Contact Prashant Jha, Full Stack MERN Developer, for SEO-optimized, high-performance web and PWA development services for global clients.",
             about: {
               "@type": "Person",
               name: "Prashant Jha",
               jobTitle: "Full Stack MERN Developer",
-              url: "https://prashant-jhadev.netlify.app/",
+              url: "https://prashantjhadev.in/",
               email: "mailto:jhaprashant.works@gmail.com",
               sameAs: [
                 "https://www.linkedin.com/in/jhaprashant183/",
-                "https://github.com/PrashantJha183",
-              ],
-            },
+                "https://github.com/PrashantJha183"
+              ]
+            }
           })}
         </script>
       </Helmet>
