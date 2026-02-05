@@ -1,4 +1,4 @@
-import React, { memo, Suspense, lazy } from "react";
+import React, { memo, Suspense, lazy, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import ReactGA from "react-ga4";
 
 import ErrorBoundary from "./components/base/ErrorBoundary";
 import SkeletonLoader from "./components/base/SkeletonLoader";
@@ -16,6 +17,11 @@ import OfflineInfoModal from "./components/base/OfflineInfoModal";
 ========================= */
 import { AuthProvider } from "../src/context/AuthContext";
 import ProtectedRoute from "../src/components/ProtectedRoute";
+
+/* =========================
+   GA4 INIT (ONCE)
+========================= */
+ReactGA.initialize("G-YP6GG3704G"); //replace with real ID
 
 /* =========================
    LAZY COMPONENTS
@@ -79,52 +85,62 @@ const Login = lazy(() =>
   import("../src/components/base/Login").catch(() => ({ default: () => null }))
 );
 const Dashboard = lazy(() =>
-  import("../src/admin/layout/AdminLayout").catch(() => ({ default: () => null }))
+  import("../src/admin/layout/AdminLayout").catch(() => ({
+    default: () => null,
+  }))
 );
 
 const AdminDashboard = lazy(() =>
   import("../src/admin/pages/Dashboard").catch(() => ({ default: () => null }))
 );
-
 const AdminBlogs = lazy(() =>
   import("../src/admin/pages/Blogs").catch(() => ({ default: () => null }))
 );
-
 const AdminUsers = lazy(() =>
   import("../src/admin/pages/Users").catch(() => ({ default: () => null }))
 );
-const Unauthorized = lazy(() =>
-  import("../src/admin/pages/Unauthorized").catch(() => ({ default: () => null }))
-);
 
-//////////////////////////
-// ScrollToTop Component
-//////////////////////////
+/* =========================
+   ScrollToTop + GA PAGEVIEW
+========================= */
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo({ top: 0 });
+    ReactGA.send({ hitType: "pageview", page: pathname });
   }, [pathname]);
 
   return null;
 };
+
+/* =========================
+   HELPERS
+========================= */
 const getCanonicalUrl = (pathname) => {
   const base = "https://prashantjhadev.in";
   return pathname === "/" ? base : `${base}${pathname}`;
 };
 
-//////////////////////////
-// App Layout
-//////////////////////////
+const getLangFromPath = (pathname) => {
+  if (pathname.startsWith("/hi")) return "hi";
+  if (pathname.startsWith("/fr")) return "fr";
+  if (pathname.startsWith("/ar")) return "ar";
+  return "en";
+};
+
+/* =========================
+   App Layout
+========================= */
 const AppLayout = () => {
   const location = useLocation();
   const canonicalUrl = getCanonicalUrl(location.pathname);
+  const currentLang = getLangFromPath(location.pathname);
 
   return (
     <>
-      {/* GLOBAL SEO FALLBACK */}
-      <Helmet>
+      {/* ================= GLOBAL SEO ================= */}
+      <Helmet htmlAttributes={{ lang: currentLang }}>
         <title>Prashant Jha | Full Stack MERN Developer</title>
 
         <meta
@@ -134,12 +150,20 @@ const AppLayout = () => {
 
         <meta name="robots" content="index, follow" />
 
-        {/* FIXED CANONICAL */}
+        {/* CANONICAL */}
         <link rel="canonical" href={canonicalUrl} />
+
+        {/* HREFLANG (SAFE BASE SET) */}
+        <link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/" />
+        <link rel="alternate" hreflang="en" href="https://prashantjhadev.in/" />
+
+        {/* Enable ONLY when content exists */}
+        <link rel="alternate" hreflang="hi" href="https://prashantjhadev.in/hi/" />
+        <link rel="alternate" hreflang="fr" href="https://prashantjhadev.in/fr/" />
+        <link rel="alternate" hreflang="ar" href="https://prashantjhadev.in/ar/" />
       </Helmet>
 
-
-      {/* GLOBAL OFFLINE INFO */}
+      {/* OFFLINE INFO */}
       <OfflineInfoModal />
 
       <ScrollToTop />
@@ -151,28 +175,22 @@ const AppLayout = () => {
         </ErrorBoundary>
       </Suspense>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <main id="main-content">
         <Suspense fallback={<SkeletonLoader />}>
           <Routes>
-            {/* PUBLIC ROUTES */}
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Service />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
 
-            <Route
-              path="/terms-and-conditions"
-              element={<TermsAndConditions />}
-            />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
 
-            {/* AUTH */}
             <Route path="/login" element={<Login />} />
 
-            {/* PROTECTED */}
             <Route
               path="/dashboard/*"
               element={
@@ -185,14 +203,11 @@ const AppLayout = () => {
               <Route path="blogs" element={<AdminBlogs />} />
               <Route path="users" element={<AdminUsers />} />
             </Route>
-
-            <Route path="/unauthorized" element={<div>Unauthorized</div>} />
-
           </Routes>
         </Suspense>
       </main>
 
-      {/* PROJECT SECTION */}
+      {/* PROJECT */}
       {![
         "/contact",
         "/blog",
@@ -201,7 +216,8 @@ const AppLayout = () => {
         "/disclaimer",
         "/login",
         "/dashboard",
-        "/dashboard/users", "/dashboard/blogs"
+        "/dashboard/users",
+        "/dashboard/blogs",
       ].includes(location.pathname) && (
           <Suspense fallback={<SkeletonLoader />}>
             <ErrorBoundary>
@@ -220,9 +236,9 @@ const AppLayout = () => {
   );
 };
 
-//////////////////////////
-// App Wrapper
-//////////////////////////
+/* =========================
+   App Wrapper
+========================= */
 const AppContent = () => (
   <Router basename="/">
     <AuthProvider>
