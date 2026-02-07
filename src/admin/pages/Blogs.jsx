@@ -1,7 +1,144 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
-import { Pencil, Trash2, ImagePlus } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+
+/* ======================================================
+   HELPERS
+====================================================== */
+const formatDateTime = (isoString) => {
+    if (!isoString) return "Unknown date";
+
+    const date = new Date(isoString);
+
+    if (isNaN(date.getTime())) {
+        console.warn("Invalid date format", isoString);
+        return "Invalid date";
+    }
+
+    return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
+};
+
+const normalizeContentBlocks = (blog) => {
+    if (Array.isArray(blog.content_blocks)) {
+        return blog.content_blocks;
+    }
+
+    if (Array.isArray(blog.contentBlocks)) {
+        console.warn("contentBlocks alias detected for blog", blog.id);
+        return blog.contentBlocks;
+    }
+
+    console.warn("content_blocks missing for blog", blog.id, blog);
+    return [];
+};
+
+const getPreviewText = (blog) => {
+    const blocks = normalizeContentBlocks(blog);
+
+    const textBlock = blocks.find(
+        (b) =>
+            b &&
+            (b.type === "heading" || b.type === "paragraph") &&
+            typeof b.text === "string" &&
+            b.text.trim().length > 0
+    );
+
+    if (textBlock) {
+        return textBlock.text;
+    }
+
+    if (typeof blog.description === "string" && blog.description.trim()) {
+        console.warn("Legacy blog using description fallback", blog.id);
+        return blog.description;
+    }
+
+    return "No content added yet";
+};
+
+
+const RenderContentBlocks = ({ blog }) => {
+    const blocks = normalizeContentBlocks(blog);
+
+    if (!blocks.length) {
+        console.warn("No content blocks to render for blog", blog.id);
+        return (
+            <p className="text-gray-500 text-sm mt-3">
+                No content added yet
+            </p>
+        );
+    }
+
+    return (
+        <div className="mt-4 space-y-3">
+            {blocks.map((block, index) => {
+                if (!block || block._delete) return null;
+
+                if (block.type === "heading") {
+                    return (
+                        <h4
+                            key={block.id || index}
+                            className="text-lg font-semibold text-gray-900"
+                        >
+                            {block.text}
+                        </h4>
+                    );
+                }
+
+                if (block.type === "paragraph") {
+                    return (
+                        <p
+                            key={block.id || index}
+                            className="text-gray-700 text-sm leading-relaxed"
+                        >
+                            {block.text}
+                        </p>
+                    );
+                }
+
+                if (block.type === "media" && block.media?.url) {
+                    if (block.media.fileType === "pdf") {
+                        return (
+                            <a
+                                key={block.id || index}
+                                href={block.media.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 text-sm underline"
+                            >
+                                View PDF
+                            </a>
+                        );
+                    }
+
+                    return (
+                        <img
+                            key={block.id || index}
+                            src={block.media.url}
+                            alt=""
+                            className="w-full max-h-72 object-cover rounded"
+                        />
+                    );
+                }
+
+                console.warn("Unknown block type", block);
+                return null;
+            })}
+        </div>
+    );
+};
+
+
+/* ======================================================
+   ADMIN BLOGS
+====================================================== */
 
 export default function AdminBlogs() {
     const { user } = useAuth();
@@ -10,47 +147,43 @@ export default function AdminBlogs() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    /* ================= MODAL STATE ================= */
     const [showFormModal, setShowFormModal] = useState(false);
-    const [showMediaModal, setShowMediaModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedBlog, setSelectedBlog] = useState(null);
 
-    /* ================= BLOG CORE FORM ================= */
     const [formData, setFormData] = useState({
         title: "",
-        description: "",
         status: "draft",
     });
 
-    /* ================= MEDIA FILES ================= */
-    const [mediaFiles, setMediaFiles] = useState({
-        images: [],
-        videos: [],
-        audios: [],
-    });
-
-    const imageInputRef = useRef(null);
-    const videoInputRef = useRef(null);
-    const audioInputRef = useRef(null);
-
+    const [blocks, setBlocks] = useState([]);
+    const [mediaFiles, setMediaFiles] = useState({});
 
     /* ================= FETCH BLOGS ================= */
+
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
+                console.log("Fetching admin blogs");
                 const res = await api.get("/blogs");
-                const blogsData = res.data.blogs || [];
 
-                const normalized = blogsData.map((b) => ({
-                    ...b,
-                    images: Array.isArray(b.images) ? b.images : [],
-                    videos: Array.isArray(b.videos) ? b.videos : [],
-                    audios: Array.isArray(b.audios) ? b.audios : [],
-                }));
+                console.log("Raw API response", res.data);
 
-                setBlogs(normalized);
-            } catch {
+                const list = res.data?.blogs;
+
+                if (!Array.isArray(list)) {
+                    console.error("blogs is not an array", list);
+                    setBlogs([]);
+                    return;
+                }
+
+                list.forEach((b) => {
+                    console.log("Fetched blog keys", b.id, Object.keys(b));
+                });
+
+                setBlogs(list);
+            } catch (err) {
+                console.error("Failed to fetch blogs", err);
                 setError("Failed to load blogs");
             } finally {
                 setLoading(false);
@@ -60,195 +193,137 @@ export default function AdminBlogs() {
         fetchBlogs();
     }, []);
 
-    /* ================= ACTION HANDLERS ================= */
+    /* ================= ACTIONS ================= */
+
     const openCreate = () => {
         setSelectedBlog(null);
-        setFormData({ title: "", description: "", status: "draft" });
-        setMediaFiles({ images: [], videos: [], audios: [] });
+        setFormData({ title: "", status: "draft" });
+        setBlocks([
+            { type: "heading", text: "" },
+            { type: "paragraph", text: "" },
+        ]);
+        setMediaFiles({});
         setShowFormModal(true);
     };
 
     const openEdit = (blog) => {
+        console.log("Editing blog", blog.id, blog);
+
         setSelectedBlog(blog);
         setFormData({
-            title: blog.title,
-            description: blog.description,
-            status: blog.status,
+            title: blog.title || "",
+            status: blog.status || "draft",
         });
+
+        setBlocks(normalizeContentBlocks(blog));
+        setMediaFiles({});
         setShowFormModal(true);
     };
 
-    const openMedia = (blog) => {
-        setSelectedBlog(blog);
-        setMediaFiles({ images: [], videos: [], audios: [] });
-        setShowMediaModal(true);
+    const addBlock = (type) => {
+        if (type === "media") {
+            const fileKey = `media_${crypto.randomUUID()}`;
+            setBlocks((prev) => [...prev, { type: "media", fileKey }]);
+        } else {
+            setBlocks((prev) => [...prev, { type, text: "" }]);
+        }
     };
 
-    const createBlog = async () => {
-        // BASIC VALIDATION
-        if (!formData.title.trim() || !formData.description.trim()) {
-            alert("Title and description are required");
+    const updateBlockText = (index, text) => {
+        setBlocks((prev) =>
+            prev.map((b, i) => (i === index ? { ...b, text } : b))
+        );
+    };
+
+    const markDeleteBlock = (index) => {
+        setBlocks((prev) =>
+            prev.map((b, i) => (i === index ? { ...b, _delete: true } : b))
+        );
+    };
+
+    /* ================= SAVE BLOG ================= */
+
+    const submitBlog = async () => {
+        if (!formData.title.trim()) {
+            alert("Title is required");
             return;
         }
 
-        const hasLocalFiles =
-            mediaFiles.images.length ||
-            mediaFiles.videos.length ||
-            mediaFiles.audios.length;
+        console.log("Submitting blog payload");
+        console.log("Blocks", blocks);
+        console.log("Media files", mediaFiles);
 
-        // 🔵 CASE 1: JSON ONLY (manual testing / URLs)
-        if (!hasLocalFiles) {
-            const payload = {
-                title: formData.title.trim(),
-                description: formData.description.trim(),
-                status: formData.status,
-                images: formData.images || [],
-                videos: formData.videos || [],
-                audios: formData.audios || [],
-            };
-
-            const res = await api.post("/blogs", payload);
-
-            const blog = res.data.blog || res.data.data || res.data;
-            setBlogs((prev) => [blog, ...prev]);
-            setShowFormModal(false);
-            return;
-        }
-
-        // 🟢 CASE 2: LOCAL FILE UPLOAD (multipart)
         const form = new FormData();
         form.append("title", formData.title.trim());
-        form.append("description", formData.description.trim());
         form.append("status", formData.status);
+        form.append("content_blocks", JSON.stringify(blocks));
 
-        mediaFiles.images.forEach((f) => form.append("images", f));
-        mediaFiles.videos.forEach((f) => form.append("videos", f));
-        mediaFiles.audios.forEach((f) => form.append("audios", f));
-
-        const res = await api.post("/blogs", form, {
-            headers: { "Content-Type": "multipart/form-data" },
+        Object.entries(mediaFiles).forEach(([key, file]) => {
+            if (file) {
+                form.append(key, file);
+            }
         });
 
-        const blog = res.data.blog || res.data.data || res.data;
-        setBlogs((prev) => [blog, ...prev]);
-        setShowFormModal(false);
-    };
-
-
-
-    const updateBlog = async () => {
-        const payload = {
-            title: formData.title.trim(),
-            description: formData.description.trim(),
-            status: formData.status,
-        };
-
-        const res = await api.put(`/blogs/${selectedBlog.id}`, payload);
-
-        const updated =
-            res.data?.data ||
-            res.data?.blog ||
-            res.data;
-
-        setBlogs((prev) =>
-            prev.map((b) => (b.id === selectedBlog.id ? updated : b))
-        );
-
-        setShowFormModal(false);
-    };
-
-
-    const updateMedia = async () => {
-        const { images, videos, audios } = mediaFiles;
-
-        const hasFiles =
-            images.length > 0 ||
-            videos.length > 0 ||
-            audios.length > 0;
-
-        if (!hasFiles) {
-            console.warn("No media selected. Aborting request.");
-            return; // 🚫 ABSOLUTELY NO API CALL
-        }
-
-        const form = new FormData();
-
-        images.forEach((f) => form.append("images", f));
-        videos.forEach((f) => form.append("videos", f));
-        audios.forEach((f) => form.append("audios", f));
-
         try {
-            // 🔥 Guard: do not send empty FormData
-            const hasFiles =
-                form.getAll("images").length ||
-                form.getAll("videos").length ||
-                form.getAll("audios").length;
+            const res = selectedBlog
+                ? await api.put(`/blogs/${selectedBlog.id}`, form, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                })
+                : await api.post("/blogs", form, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
 
-            if (!hasFiles) {
-                console.warn("No media selected, skipping upload");
+            console.log("Save response", res.data);
+
+            const blog = res.data?.blog;
+            if (!blog) {
+                console.error("No blog returned from API");
                 return;
             }
 
-            // ✅ IMPORTANT FIX: upload media goes to /blogs/:id (NOT /media)
-            const res = await api.patch(
-                `/blogs/${selectedBlog.id}/media`,
-                form,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
-
-            const updatedBlog = res.data.blog;
-
             setBlogs((prev) =>
-                prev.map((b) =>
-                    b.id === updatedBlog.id ? updatedBlog : b
-                )
+                selectedBlog
+                    ? prev.map((b) => (b.id === blog.id ? blog : b))
+                    : [blog, ...prev]
             );
 
-            setShowMediaModal(false);
-            setMediaFiles({ images: [], videos: [], audios: [] });
-
+            setShowFormModal(false);
         } catch (err) {
-            console.error(
-                "Media upload failed",
-                err.response?.data || err.message
-            );
+            console.error("Failed to save blog", err);
+            alert("Failed to save blog");
         }
-
     };
 
-
     const deleteBlog = async () => {
-        await api.delete(`/blogs/${selectedBlog.id}`);
-        setBlogs((prev) => prev.filter((b) => b.id !== selectedBlog.id));
-        setShowDeleteModal(false);
+        if (!selectedBlog) return;
+
+        try {
+            await api.delete(`/blogs/${selectedBlog.id}`);
+            setBlogs((prev) => prev.filter((b) => b.id !== selectedBlog.id));
+            setShowDeleteModal(false);
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
     };
 
     /* ================= UI ================= */
+
     if (loading) {
         return (
-            <div className="mt-20 px-4 sm:px-6">
-                <div className="flex justify-between mb-6">
-                    <div className="h-8 w-40 bg-gray-200 rounded animate-pulse" />
-                    <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
-                </div>
-
-                <div className="flex flex-col gap-8 items-center">
-                    {[1, 2, 3].map((i) => (
-                        <BlogSkeleton key={i} />
-                    ))}
-                </div>
+            <div className="mt-20 px-4">
+                <BlogSkeleton />
+                <BlogSkeleton />
+                <BlogSkeleton />
             </div>
         );
     }
 
-    if (error) return <p className="text-red-500">{error}</p>;
+    if (error) {
+        return <p className="text-red-500">{error}</p>;
+    }
 
     return (
-        <div className="mt-28 md:mt-32 px-4 sm:px-6 new-font">
+        <div className="mt-28 px-4 new-font">
             <div className="flex justify-between mb-6">
                 <h2 className="text-2xl font-semibold">Admin Blogs</h2>
                 <button
@@ -259,301 +334,143 @@ export default function AdminBlogs() {
                 </button>
             </div>
 
-            {/* SINGLE COLUMN – CENTERED */}
             <div className="flex flex-col gap-8 items-center">
                 {blogs.map((b) => (
                     <div
                         key={b.id}
-                        className="w-full max-w-3xl bg-white rounded-xl shadow p-4 sm:p-6 flex flex-col gap-4"
+                        className="w-full max-w-3xl bg-white rounded-xl shadow p-6"
                     >
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between">
                             <div>
-                                <h3 className="text-lg sm:text-xl font-semibold">
-                                    {b.title}
-                                </h3>
-                                <span className="text-sm text-gray-500 capitalize">
-                                    {b.status}
-                                </span>
+                                <h3 className="text-xl font-semibold">{b.title}</h3>
+
+                                <div className="text-sm text-gray-500 mt-1 space-x-2">
+                                    <span className="capitalize">{b.status}</span>
+                                    <span>•</span>
+                                    <span>
+                                        By {b.profiles?.name || "Unknown author"}
+                                    </span>
+                                    <span>•</span>
+                                    <span>
+                                        {formatDateTime(b.created_at)}
+                                    </span>
+                                </div>
                             </div>
+
 
                             <div className="flex gap-3">
                                 <button onClick={() => openEdit(b)}>
                                     <Pencil size={18} />
                                 </button>
-                                <button onClick={() => openMedia(b)}>
-                                    <ImagePlus size={18} />
-                                </button>
                                 <button
+                                    className="text-red-600"
                                     onClick={() => {
                                         setSelectedBlog(b);
                                         setShowDeleteModal(true);
                                     }}
-                                    className="text-red-600"
                                 >
                                     <Trash2 size={18} />
                                 </button>
                             </div>
                         </div>
 
-                        <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                            {b.description}
-                        </p>
+                        <RenderContentBlocks blog={b} />
 
-                        <MediaPreview
-                            images={b.images}
-                            videos={b.videos}
-                            audios={b.audios}
-                        />
                     </div>
                 ))}
             </div>
 
-            {/* MODALS (UNCHANGED) */}
             {showFormModal && (
                 <Modal title={selectedBlog ? "Edit Blog" : "Create Blog"}>
+                    <input
+                        value={formData.title}
+                        onChange={(e) =>
+                            setFormData({ ...formData, title: e.target.value })
+                        }
+                        placeholder="Blog title"
+                        className="w-full px-4 py-3 border rounded"
+                    />
 
-                    {/* Title */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Blog Title
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Enter blog title"
-                            value={formData.title}
-                            onChange={(e) =>
-                                setFormData({ ...formData, title: e.target.value })
-                            }
-                            className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                    </div>
+                    <select
+                        value={formData.status}
+                        onChange={(e) =>
+                            setFormData({ ...formData, status: e.target.value })
+                        }
+                        className="w-full px-4 py-3 border rounded"
+                    >
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                    </select>
 
-                    {/* Description */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Blog Description
-                        </label>
-                        <textarea
-                            placeholder="Write your blog content here..."
-                            value={formData.description}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    description: e.target.value,
-                                })
-                            }
-                            rows={8}
-                            className="w-full px-4 py-3 border rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                    </div>
+                    {blocks.map((block, i) =>
+                        block._delete ? null : (
+                            <div key={i} className="border p-3 rounded">
+                                {block.type !== "media" && (
+                                    <textarea
+                                        value={block.text || ""}
+                                        onChange={(e) => updateBlockText(i, e.target.value)}
+                                        placeholder={block.type}
+                                        className="w-full border p-2 rounded"
+                                    />
+                                )}
 
-                    {/* Status */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Status
-                        </label>
-                        <select
-                            value={formData.status}
-                            onChange={(e) =>
-                                setFormData({ ...formData, status: e.target.value })
-                            }
-                            className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                        >
-                            <option value="draft">Draft</option>
-                            <option value="published">Published</option>
-                        </select>
-                    </div>
+                                {block.type === "media" && (
+                                    <input
+                                        type="file"
+                                        onChange={(e) =>
+                                            setMediaFiles((prev) => ({
+                                                ...prev,
+                                                [block.fileKey]: e.target.files[0],
+                                            }))
+                                        }
+                                    />
+                                )}
 
-                    {/* Media Upload (Create Only) */}
-                    {!selectedBlog && (
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Upload Images
-                            </label>
-                            <input
-                                type="file"
-                                multiple
-                                onChange={(e) => {
-                                    const files = Array.from(e.target.files);
-                                    setMediaFiles((prev) => ({
-                                        ...prev,
-                                        images: files,
-                                    }));
-                                }}
-                                className="w-full text-sm"
-                            />
-                        </div>
+                                <button
+                                    onClick={() => markDeleteBlock(i)}
+                                    className="text-red-600 text-sm mt-2"
+                                >
+                                    Remove block
+                                </button>
+                            </div>
+                        )
                     )}
 
+                    <div className="flex gap-2">
+                        <button onClick={() => addBlock("heading")}>Add heading</button>
+                        <button onClick={() => addBlock("paragraph")}>Add paragraph</button>
+                        <button onClick={() => addBlock("media")}>Add media</button>
+                    </div>
+
                     <ModalActions
-                        onSave={selectedBlog ? updateBlog : createBlog}
+                        onSave={submitBlog}
                         onCancel={() => setShowFormModal(false)}
                     />
                 </Modal>
             )}
 
-
-            {showMediaModal && (
-                <Modal title="Update Media">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Upload Images
-                        </label>
-                        <input
-                            type="file"
-                            multiple
-                            onChange={(e) =>
-                                setMediaFiles({
-                                    ...mediaFiles,
-                                    images: [...e.target.files],
-                                })
-                            }
-                            className="w-full text-sm"
-                        />
-                    </div>
-
-                    <ModalActions
-                        onSave={updateMedia}
-                        onCancel={() => setShowMediaModal(false)}
-                    />
-                </Modal>
-            )}
-
-
             {showDeleteModal && (
                 <Modal title="Confirm Delete">
-                    <p className="text-sm text-gray-700">
-                        Are you sure you want to delete{" "}
-                        <strong>{selectedBlog?.title}</strong>?
-                    </p>
-
+                    <p>Delete {selectedBlog?.title}</p>
                     <ModalActions
                         onSave={deleteBlog}
                         onCancel={() => setShowDeleteModal(false)}
                     />
                 </Modal>
             )}
-
         </div>
     );
 }
 
-/* ================= MEDIA PREVIEW WITH PER-ITEM SKELETON ================= */
-function MediaPreview({ images = [], videos = [], audios = [] }) {
-    return (
-        <div className="space-y-4">
-            {/* IMAGES */}
-            {images.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {images.map((src, i) => (
-                        <SkeletonImage key={i} src={src} />
-                    ))}
-                </div>
-            )}
+/* ================= SHARED COMPONENTS ================= */
 
-            {/* VIDEOS */}
-            {videos.map((src, i) => (
-                <SkeletonVideo key={i} src={src} />
-            ))}
-
-            {/* AUDIOS */}
-            {audios.map((src, i) => (
-                <SkeletonAudio key={i} src={src} />
-            ))}
-        </div>
-    );
-}
-
-/* ================= PER-ITEM SKELETONS ================= */
-
-function SkeletonImage({ src }) {
-    const [loaded, setLoaded] = useState(false);
-
-    return (
-        <div className="relative w-full h-28 sm:h-32 rounded overflow-hidden">
-            {/* Skeleton */}
-            {!loaded && (
-                <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-            )}
-
-            {/* Image */}
-            <img
-                src={src}
-                alt=""
-                onLoad={() => setLoaded(true)}
-                className={`
-                    absolute inset-0 w-full h-full object-cover
-                    transition-all duration-500
-                    ${loaded ? "blur-0 opacity-100" : "blur-md opacity-0"}
-                `}
-            />
-        </div>
-    );
-}
-
-function SkeletonVideo({ src }) {
-    const [loaded, setLoaded] = useState(false);
-
-    return (
-        <div className="relative w-full aspect-video rounded overflow-hidden">
-            {/* Skeleton */}
-            {!loaded && (
-                <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-            )}
-
-            {/* Video */}
-            <video
-                src={src}
-                controls
-                onLoadedData={() => setLoaded(true)}
-                className={`
-                    absolute inset-0 w-full h-full
-                    transition-all duration-500
-                    ${loaded ? "blur-0 opacity-100" : "blur-md opacity-0"}
-                `}
-            />
-        </div>
-    );
-}
-
-function SkeletonAudio({ src }) {
-    const [loaded, setLoaded] = useState(false);
-
-    return (
-        <div className="relative w-full h-12 rounded overflow-hidden">
-            {/* Skeleton */}
-            {!loaded && (
-                <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-            )}
-
-            {/* Audio */}
-            <audio
-                src={src}
-                controls
-                onCanPlay={() => setLoaded(true)}
-                className={`
-                    w-full h-full
-                    transition-all duration-500
-                    ${loaded ? "blur-0 opacity-100" : "blur-md opacity-0"}
-                `}
-            />
-        </div>
-    );
-}
-
-
-/* ================= MODALS ================= */
 function Modal({ title, children }) {
     return (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
-            <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg flex flex-col max-h-[90vh]">
-
-                {/* Header */}
-                <div className="px-6 py-4 border-b">
+        <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-start overflow-y-auto py-10">
+            <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg max-h-[90vh] flex flex-col">
+                <div className="px-6 py-4 border-b shrink-0">
                     <h3 className="text-xl font-semibold">{title}</h3>
                 </div>
-
-                {/* Body */}
                 <div className="px-6 py-5 space-y-4 overflow-y-auto">
                     {children}
                 </div>
@@ -565,60 +482,21 @@ function Modal({ title, children }) {
 function ModalActions({ onSave, onCancel }) {
     return (
         <div className="flex justify-end gap-3 pt-4 border-t">
-            <button
-                onClick={onCancel}
-                className="px-5 py-2 rounded border text-sm hover:bg-gray-100 transition"
-            >
+            <button onClick={onCancel} className="px-5 py-2 border rounded">
                 Cancel
             </button>
-            <button
-                onClick={onSave}
-                className="px-5 py-2 rounded bg-black text-white text-sm hover:opacity-90 transition"
-            >
+            <button onClick={onSave} className="px-5 py-2 bg-black text-white rounded">
                 Save
             </button>
         </div>
     );
 }
 
-
 function BlogSkeleton() {
     return (
-        <div className="w-full max-w-3xl bg-white rounded-xl shadow p-4 sm:p-6 flex flex-col gap-4">
-
-            {/* Header */}
-            <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                    <div className="h-5 w-56 bg-gray-200 rounded animate-pulse" />
-                    <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
-                </div>
-
-                <div className="flex gap-3">
-                    {[1, 2, 3].map((i) => (
-                        <div
-                            key={i}
-                            className="h-5 w-5 bg-gray-200 rounded animate-pulse"
-                        />
-                    ))}
-                </div>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-                <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
-                <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
-                <div className="h-4 w-4/5 bg-gray-200 rounded animate-pulse" />
-            </div>
-
-            {/* Media */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                {[1, 2, 3].map((i) => (
-                    <div
-                        key={i}
-                        className="h-28 sm:h-32 bg-gray-200 rounded animate-pulse"
-                    />
-                ))}
-            </div>
+        <div className="w-full max-w-3xl bg-white rounded-xl shadow p-6 mb-6">
+            <div className="h-5 w-48 bg-gray-200 rounded animate-pulse mb-2" />
+            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
         </div>
     );
 }
