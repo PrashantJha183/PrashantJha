@@ -59,7 +59,7 @@ function Blog() {
 
         const fetchBlogs = async () => {
             try {
-                const res = await api.get("/public-blogs", {
+                const res = await api.get("/blogs", {
                     signal: abortRef.current.signal,
                 });
 
@@ -84,27 +84,24 @@ function Blog() {
         return <BlogUnderDevelopment />;
     }
 
-    const splitIntoParagraphs = (text, maxParagraphs = 3) => {
-        if (!text) return [];
+    /* =====================
+       HELPERS FROM content_blocks
+    ===================== */
+    const extractImages = (blocks = []) =>
+        blocks
+            .filter(
+                (b) => b.type === "media" && b.media?.fileType === "image"
+            )
+            .map((b) => b.media.url);
 
-        // Split by sentence end
-        const sentences = text.split(/(?<=[.?!])\s+/);
-
-        if (sentences.length <= 2) {
-            return [text];
-        }
-
-        const paragraphs = [];
-        const chunkSize = Math.ceil(sentences.length / maxParagraphs);
-
-        for (let i = 0; i < sentences.length; i += chunkSize) {
-            paragraphs.push(
-                sentences.slice(i, i + chunkSize).join(" ")
-            );
-        }
+    const extractText = (blocks = [], maxParagraphs = 3) => {
+        const paragraphs = blocks
+            .filter((b) => b.type === "paragraph")
+            .map((b) => b.text);
 
         return paragraphs.slice(0, maxParagraphs);
     };
+
     return (
         <motion.section
             variants={pageSpring}
@@ -113,47 +110,51 @@ function Blog() {
             className="min-h-screen bg-[#F8FAFC] px-4 md:py-40 py-28 new-font"
         >
             <div className="max-w-3xl mx-auto space-y-12">
-                {blogs.map((blog) => (
-                    <motion.article
-                        key={blog.id}
-                        variants={itemSpring}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-80px" }}
-                        className="bg-white rounded-xl shadow-md overflow-hidden"
-                    >
-                        {/* TITLE */}
-                        <div className="p-6 pb-2">
-                            <h2 className="text-xl sm:text-2xl font-bold">
-                                {blog.title}
-                            </h2>
+                {blogs.map((blog) => {
+                    const images = extractImages(blog.content_blocks);
+                    const textParas = extractText(blog.content_blocks);
 
-                            {/* AUTHOR + DATE */}
-                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                                By{" "}
-                                <span className="font-medium text-gray-700">
-                                    {blog.profiles?.name || "Admin"}
-                                </span>{" "}
-                                • {formatISTDate(blog.created_at)} IST
-                            </p>
-                        </div>
+                    return (
+                        <motion.article
+                            key={blog.id}
+                            variants={itemSpring}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-80px" }}
+                            className="bg-white rounded-xl shadow-md overflow-hidden"
+                        >
+                            {/* TITLE */}
+                            <div className="p-6 pb-2">
+                                <h2 className="text-xl sm:text-2xl font-bold">
+                                    {blog.title}
+                                </h2>
 
-                        {/* IMAGES (DYNAMIC) */}
-                        {Array.isArray(blog.images) && blog.images.length > 0 && (
-                            <BlogImageGallery images={blog.images} />
-                        )}
-
-                        {/* DESCRIPTION */}
-                        <div className="p-6 pt-4 text-gray-700 text-sm sm:text-base leading-relaxed space-y-4">
-                            {splitIntoParagraphs(blog.description).map((para, i) => (
-                                <p key={i} className="text-justify">
-                                    {para}
+                                {/* AUTHOR + DATE */}
+                                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                                    By{" "}
+                                    <span className="font-medium text-gray-700">
+                                        {blog.profiles?.name || "Admin"}
+                                    </span>{" "}
+                                    • {formatISTDate(blog.created_at)} IST
                                 </p>
-                            ))}
-                        </div>
+                            </div>
 
-                    </motion.article>
-                ))}
+                            {/* IMAGES */}
+                            {images.length > 0 && (
+                                <BlogImageGallery images={images} />
+                            )}
+
+                            {/* TEXT */}
+                            <div className="p-6 pt-4 text-gray-700 text-sm sm:text-base leading-relaxed space-y-4">
+                                {textParas.map((para, i) => (
+                                    <p key={i} className="text-justify">
+                                        {para}
+                                    </p>
+                                ))}
+                            </div>
+                        </motion.article>
+                    );
+                })}
             </div>
         </motion.section>
     );
@@ -165,9 +166,7 @@ function Blog() {
 const BlogImageGallery = memo(({ images }) => {
     const count = images.length;
 
-    if (count === 1) {
-        return <SingleImage src={images[0]} />;
-    }
+    if (count === 1) return <SingleImage src={images[0]} />;
 
     if (count === 2) {
         return (
