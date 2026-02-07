@@ -59,7 +59,7 @@ function Blog() {
 
         const fetchBlogs = async () => {
             try {
-                const res = await api.get("/blogs", {
+                const res = await api.get("/public-blogs", {
                     signal: abortRef.current.signal,
                 });
 
