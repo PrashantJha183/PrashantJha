@@ -3,7 +3,7 @@
 This is my personal **portfolio & PWA website**, built to showcase my work, skills, services, and technical blogs.  
 The project is designed with **performance, SEO, accessibility, and scalability** in mind and targets **global clients**.
 
-**Live Website:** https://prashantjhadev.in/
+**Live Website:** https://www.prashantjhadev.in/
 
 ---
 
