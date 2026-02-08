@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Share2 } from "lucide-react";
 
 /* ======================================================
-   HELPERS
+   UTILITIES
 ====================================================== */
+
+/* Generates a stable unique id for blocks on frontend */
+const generateId = () =>
+    `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+/* Formats ISO date string into readable Indian locale format */
 const formatDateTime = (isoString) => {
     if (!isoString) return "Unknown date";
-
     const date = new Date(isoString);
-
-    if (isNaN(date.getTime())) {
-        console.warn("Invalid date format", isoString);
-        return "Invalid date";
-    }
+    if (isNaN(date.getTime())) return "Invalid date";
 
     return date.toLocaleString("en-IN", {
         day: "2-digit",
@@ -26,67 +27,62 @@ const formatDateTime = (isoString) => {
     });
 };
 
+/* Normalizes content blocks coming from backend */
 const normalizeContentBlocks = (blog) => {
-    if (Array.isArray(blog.content_blocks)) {
-        return blog.content_blocks;
-    }
-
-    if (Array.isArray(blog.contentBlocks)) {
-        console.warn("contentBlocks alias detected for blog", blog.id);
-        return blog.contentBlocks;
-    }
-
-    console.warn("content_blocks missing for blog", blog.id, blog);
+    if (Array.isArray(blog.content_blocks)) return blog.content_blocks;
+    if (Array.isArray(blog.contentBlocks)) return blog.contentBlocks;
     return [];
 };
 
-const getPreviewText = (blog) => {
-    const blocks = normalizeContentBlocks(blog);
-
-    const textBlock = blocks.find(
-        (b) =>
-            b &&
-            (b.type === "heading" || b.type === "paragraph") &&
-            typeof b.text === "string" &&
-            b.text.trim().length > 0
-    );
-
-    if (textBlock) {
-        return textBlock.text;
-    }
-
-    if (typeof blog.description === "string" && blog.description.trim()) {
-        console.warn("Legacy blog using description fallback", blog.id);
-        return blog.description;
-    }
-
-    return "No content added yet";
+/* Builds public blog URL using slug */
+const getPublicBlogUrl = (slug) => {
+    return `${window.location.origin}/blogs/${slug}`;
 };
 
+/* Handles native sharing on mobile and clipboard fallback on desktop */
+const shareBlog = async (blog) => {
+    const url = getPublicBlogUrl(blog.slug);
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: blog.title,
+                text: blog.title,
+                url,
+            });
+            return;
+        } catch {
+            return;
+        }
+    }
+
+    try {
+        await navigator.clipboard.writeText(url);
+        alert("Blog link copied to clipboard");
+    } catch {
+        alert("Unable to share blog link");
+    }
+};
+
+/* ======================================================
+   RENDER BLOCKS (READ MODE)
+====================================================== */
 
 const RenderContentBlocks = ({ blog }) => {
     const blocks = normalizeContentBlocks(blog);
 
     if (!blocks.length) {
-        console.warn("No content blocks to render for blog", blog.id);
-        return (
-            <p className="text-gray-500 text-sm mt-3">
-                No content added yet
-            </p>
-        );
+        return <p className="text-gray-500 text-sm mt-3">No content added yet</p>;
     }
 
     return (
         <div className="mt-4 space-y-3">
-            {blocks.map((block, index) => {
+            {blocks.map((block) => {
                 if (!block || block._delete) return null;
 
                 if (block.type === "heading") {
                     return (
-                        <h4
-                            key={block.id || index}
-                            className="text-lg font-semibold text-gray-900"
-                        >
+                        <h4 key={block.id} className="text-lg font-semibold">
                             {block.text}
                         </h4>
                     );
@@ -95,7 +91,7 @@ const RenderContentBlocks = ({ blog }) => {
                 if (block.type === "paragraph") {
                     return (
                         <p
-                            key={block.id || index}
+                            key={block.id}
                             className="text-gray-700 text-sm leading-relaxed"
                         >
                             {block.text}
@@ -107,7 +103,7 @@ const RenderContentBlocks = ({ blog }) => {
                     if (block.media.fileType === "pdf") {
                         return (
                             <a
-                                key={block.id || index}
+                                key={block.id}
                                 href={block.media.url}
                                 target="_blank"
                                 rel="noreferrer"
@@ -120,21 +116,19 @@ const RenderContentBlocks = ({ blog }) => {
 
                     return (
                         <img
-                            key={block.id || index}
+                            key={block.id}
                             src={block.media.url}
                             alt=""
-                            className="w-full max-h-72 object-cover rounded"
+                            className="w-full max-h-auto object-cover rounded"
                         />
                     );
                 }
 
-                console.warn("Unknown block type", block);
                 return null;
             })}
         </div>
     );
 };
-
 
 /* ======================================================
    ADMIN BLOGS
@@ -159,31 +153,14 @@ export default function AdminBlogs() {
     const [blocks, setBlocks] = useState([]);
     const [mediaFiles, setMediaFiles] = useState({});
 
-    /* ================= FETCH BLOGS ================= */
+    /* ================= FETCH ================= */
 
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                console.log("Fetching admin blogs");
                 const res = await api.get("/blogs");
-
-                console.log("Raw API response", res.data);
-
-                const list = res.data?.blogs;
-
-                if (!Array.isArray(list)) {
-                    console.error("blogs is not an array", list);
-                    setBlogs([]);
-                    return;
-                }
-
-                list.forEach((b) => {
-                    console.log("Fetched blog keys", b.id, Object.keys(b));
-                });
-
-                setBlogs(list);
-            } catch (err) {
-                console.error("Failed to fetch blogs", err);
+                setBlogs(Array.isArray(res.data?.blogs) ? res.data.blogs : []);
+            } catch {
                 setError("Failed to load blogs");
             } finally {
                 setLoading(false);
@@ -193,55 +170,59 @@ export default function AdminBlogs() {
         fetchBlogs();
     }, []);
 
-    /* ================= ACTIONS ================= */
+    /* ================= OPEN MODALS ================= */
 
     const openCreate = () => {
         setSelectedBlog(null);
         setFormData({ title: "", status: "draft" });
         setBlocks([
-            { type: "heading", text: "" },
-            { type: "paragraph", text: "" },
+            { id: generateId(), type: "heading", text: "" },
+            { id: generateId(), type: "paragraph", text: "" },
         ]);
         setMediaFiles({});
         setShowFormModal(true);
     };
 
     const openEdit = (blog) => {
-        console.log("Editing blog", blog.id, blog);
-
         setSelectedBlog(blog);
         setFormData({
             title: blog.title || "",
             status: blog.status || "draft",
         });
-
         setBlocks(normalizeContentBlocks(blog));
         setMediaFiles({});
         setShowFormModal(true);
     };
 
+    /* ================= BLOCK ACTIONS ================= */
+
     const addBlock = (type) => {
         if (type === "media") {
-            const fileKey = `media_${crypto.randomUUID()}`;
-            setBlocks((prev) => [...prev, { type: "media", fileKey }]);
+            setBlocks((prev) => [
+                ...prev,
+                { id: generateId(), type: "media", fileKey: null },
+            ]);
         } else {
-            setBlocks((prev) => [...prev, { type, text: "" }]);
+            setBlocks((prev) => [
+                ...prev,
+                { id: generateId(), type, text: "" },
+            ]);
         }
     };
 
-    const updateBlockText = (index, text) => {
+    const updateBlockText = (id, text) => {
         setBlocks((prev) =>
-            prev.map((b, i) => (i === index ? { ...b, text } : b))
+            prev.map((b) => (b.id === id ? { ...b, text } : b))
         );
     };
 
-    const markDeleteBlock = (index) => {
+    const markDeleteBlock = (id) => {
         setBlocks((prev) =>
-            prev.map((b, i) => (i === index ? { ...b, _delete: true } : b))
+            prev.map((b) => (b.id === id ? { ...b, _delete: true } : b))
         );
     };
 
-    /* ================= SAVE BLOG ================= */
+    /* ================= SAVE ================= */
 
     const submitBlog = async () => {
         if (!formData.title.trim()) {
@@ -249,37 +230,22 @@ export default function AdminBlogs() {
             return;
         }
 
-        console.log("Submitting blog payload");
-        console.log("Blocks", blocks);
-        console.log("Media files", mediaFiles);
-
         const form = new FormData();
         form.append("title", formData.title.trim());
         form.append("status", formData.status);
         form.append("content_blocks", JSON.stringify(blocks));
 
         Object.entries(mediaFiles).forEach(([key, file]) => {
-            if (file) {
-                form.append(key, file);
-            }
+            if (file) form.append(key, file);
         });
 
         try {
             const res = selectedBlog
-                ? await api.put(`/blogs/${selectedBlog.id}`, form, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                })
-                : await api.post("/blogs", form, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                });
-
-            console.log("Save response", res.data);
+                ? await api.put(`/blogs/${selectedBlog.id}`, form)
+                : await api.post("/blogs", form);
 
             const blog = res.data?.blog;
-            if (!blog) {
-                console.error("No blog returned from API");
-                return;
-            }
+            if (!blog) return;
 
             setBlogs((prev) =>
                 selectedBlog
@@ -288,11 +254,12 @@ export default function AdminBlogs() {
             );
 
             setShowFormModal(false);
-        } catch (err) {
-            console.error("Failed to save blog", err);
+        } catch {
             alert("Failed to save blog");
         }
     };
+
+    /* ================= DELETE ================= */
 
     const deleteBlog = async () => {
         if (!selectedBlog) return;
@@ -301,8 +268,8 @@ export default function AdminBlogs() {
             await api.delete(`/blogs/${selectedBlog.id}`);
             setBlogs((prev) => prev.filter((b) => b.id !== selectedBlog.id));
             setShowDeleteModal(false);
-        } catch (err) {
-            console.error("Delete failed", err);
+        } catch {
+            alert("Delete failed");
         }
     };
 
@@ -311,7 +278,6 @@ export default function AdminBlogs() {
     if (loading) {
         return (
             <div className="mt-20 px-4">
-                <BlogSkeleton />
                 <BlogSkeleton />
                 <BlogSkeleton />
             </div>
@@ -343,25 +309,28 @@ export default function AdminBlogs() {
                         <div className="flex justify-between">
                             <div>
                                 <h3 className="text-xl font-semibold">{b.title}</h3>
-
                                 <div className="text-sm text-gray-500 mt-1 space-x-2">
                                     <span className="capitalize">{b.status}</span>
                                     <span>•</span>
-                                    <span>
-                                        By {b.profiles?.name || "Unknown author"}
-                                    </span>
-                                    <span>•</span>
-                                    <span>
-                                        {formatDateTime(b.created_at)}
-                                    </span>
+                                    <span>{formatDateTime(b.created_at)}</span>
                                 </div>
                             </div>
 
+                            <div className="flex gap-3 items-center">
+                                {b.status === "published" && b.slug && (
+                                    <button
+                                        title="Share blog"
+                                        onClick={() => shareBlog(b)}
+                                        className="text-gray-600 hover:text-black"
+                                    >
+                                        <Share2 size={18} />
+                                    </button>
+                                )}
 
-                            <div className="flex gap-3">
                                 <button onClick={() => openEdit(b)}>
                                     <Pencil size={18} />
                                 </button>
+
                                 <button
                                     className="text-red-600"
                                     onClick={() => {
@@ -375,7 +344,6 @@ export default function AdminBlogs() {
                         </div>
 
                         <RenderContentBlocks blog={b} />
-
                     </div>
                 ))}
             </div>
@@ -402,44 +370,84 @@ export default function AdminBlogs() {
                         <option value="published">Published</option>
                     </select>
 
-                    {blocks.map((block, i) =>
-                        block._delete ? null : (
-                            <div key={i} className="border p-3 rounded">
-                                {block.type !== "media" && (
-                                    <textarea
-                                        value={block.text || ""}
-                                        onChange={(e) => updateBlockText(i, e.target.value)}
-                                        placeholder={block.type}
-                                        className="w-full border p-2 rounded"
-                                    />
-                                )}
+                    <div className="max-h-[50vh] overflow-y-auto space-y-4 pr-1">
+                        {blocks.map((block) =>
+                            block._delete ? null : (
+                                <div key={block.id} className="border p-3 rounded">
+                                    {block.type !== "media" && (
+                                        <textarea
+                                            value={block.text || ""}
+                                            onChange={(e) =>
+                                                updateBlockText(
+                                                    block.id,
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder={block.type}
+                                            className="w-full border p-2 rounded"
+                                        />
+                                    )}
 
-                                {block.type === "media" && (
-                                    <input
-                                        type="file"
-                                        onChange={(e) =>
-                                            setMediaFiles((prev) => ({
-                                                ...prev,
-                                                [block.fileKey]: e.target.files[0],
-                                            }))
+                                    {block.type === "media" && (
+                                        <>
+                                            {block.media?.url && (
+                                                <img
+                                                    src={block.media.url}
+                                                    className="w-full rounded mb-2"
+                                                />
+                                            )}
+
+                                            <input
+                                                type="file"
+                                                onChange={(e) => {
+                                                    const fileKey =
+                                                        block.fileKey ||
+                                                        `media_${generateId()}`;
+
+                                                    setBlocks((prev) =>
+                                                        prev.map((b) =>
+                                                            b.id === block.id
+                                                                ? {
+                                                                    ...b,
+                                                                    fileKey,
+                                                                }
+                                                                : b
+                                                        )
+                                                    );
+
+                                                    setMediaFiles((prev) => ({
+                                                        ...prev,
+                                                        [fileKey]:
+                                                            e.target.files[0],
+                                                    }));
+                                                }}
+                                            />
+                                        </>
+                                    )}
+
+                                    <button
+                                        onClick={() =>
+                                            markDeleteBlock(block.id)
                                         }
-                                    />
-                                )}
-
-                                <button
-                                    onClick={() => markDeleteBlock(i)}
-                                    className="text-red-600 text-sm mt-2"
-                                >
-                                    Remove block
-                                </button>
-                            </div>
-                        )
-                    )}
+                                        className="text-red-600 text-sm mt-2"
+                                    >
+                                        Remove block
+                                    </button>
+                                </div>
+                            )
+                        )}
+                    </div>
 
                     <div className="flex gap-2">
-                        <button onClick={() => addBlock("heading")}>Add heading</button>
-                        <button onClick={() => addBlock("paragraph")}>Add paragraph</button>
-                        <button onClick={() => addBlock("media")}>Add media</button>
+                        <button onClick={() => addBlock("heading")}>
+                            Add heading
+                        </button>
+                        <button onClick={() => addBlock("paragraph")}>
+                            Add paragraph
+                        </button>
+                        <button onClick={() => addBlock("media")}>
+                            Add media
+                        </button>
                     </div>
 
                     <ModalActions
@@ -451,7 +459,7 @@ export default function AdminBlogs() {
 
             {showDeleteModal && (
                 <Modal title="Confirm Delete">
-                    <p>Delete {selectedBlog?.title}</p>
+                    <p>Delete {selectedBlog?.title}?</p>
                     <ModalActions
                         onSave={deleteBlog}
                         onCancel={() => setShowDeleteModal(false)}
@@ -462,7 +470,7 @@ export default function AdminBlogs() {
     );
 }
 
-/* ================= SHARED COMPONENTS ================= */
+/* ================= SHARED ================= */
 
 function Modal({ title, children }) {
     return (
@@ -485,7 +493,10 @@ function ModalActions({ onSave, onCancel }) {
             <button onClick={onCancel} className="px-5 py-2 border rounded">
                 Cancel
             </button>
-            <button onClick={onSave} className="px-5 py-2 bg-black text-white rounded">
+            <button
+                onClick={onSave}
+                className="px-5 py-2 bg-black text-white rounded"
+            >
                 Save
             </button>
         </div>

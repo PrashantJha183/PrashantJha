@@ -2,9 +2,12 @@
 import React, { useEffect, useState, memo, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  FiHome, FiUser, FiBriefcase, FiEdit3, FiPhone
+  FiHome,
+  FiUser,
+  FiBriefcase,
+  FiEdit3,
+  FiPhone,
 } from "react-icons/fi";
-
 
 import ErrorBoundary from "../base/ErrorBoundary";
 import logoSrc from "../../assets/logo.png";
@@ -25,31 +28,11 @@ const bottomNavItems = Object.freeze([
   { name: "Blog", path: "/blog", icon: FiEdit3 },
 ]);
 
-
-const LogoSkeleton = memo(() => (
-  <div className="w-28 md:w-40 h-10 bg-gray-300 rounded animate-pulse" />
-));
-
 /* ================= COMPONENT ================= */
 
 const Header = () => {
   const [logoLoaded, setLogoLoaded] = useState(false);
   const location = useLocation();
-
-  /* -------- Safe image preload (no memory leak) -------- */
-  useEffect(() => {
-    let isMounted = true;
-    const img = new Image();
-
-    img.src = logoSrc;
-    img.onload = () => {
-      if (isMounted) setLogoLoaded(true);
-    };
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const isActivePath = useCallback(
     (path) => location.pathname === path,
@@ -78,26 +61,38 @@ const Header = () => {
         >
           {/* Logo */}
           <Link to="/" aria-label="Go to homepage">
-            <div className="flex-shrink-0">
-              {logoLoaded ? (
-                <img
-                  src={logoSrc}
-                  alt="OptixDigitalAI – AI & Digital Solutions"
-                  width="80"
-                  height="80"
-                  loading="eager"
-                  className="w-12 md:w-20 object-contain rounded-full"
-                />
-              ) : (
-                <div className="relative w-28 h-10">
-                  <img
-                    src={lowQualityLogo}
-                    alt="OptixDigitalAI logo placeholder"
-                    className="w-full h-full object-contain blur-sm"
-                  />
-                  <LogoSkeleton />
-                </div>
-              )}
+            <div className="relative w-12 h-12 md:w-20 md:h-20 flex-shrink-0">
+              {/* Blurred placeholder */}
+              <img
+                src={lowQualityLogo}
+                alt="OptixDigitalAI logo placeholder"
+                className={`
+                  absolute inset-0
+                  w-full h-full
+                  object-contain
+                  rounded-full
+                  transition-opacity duration-300
+                  ${logoLoaded ? "opacity-0" : "opacity-100 blur-md"}
+                `}
+                aria-hidden="true"
+              />
+
+              {/* Main logo */}
+              <img
+                src={logoSrc}
+                alt="OptixDigitalAI – AI & Digital Solutions"
+                width="80"
+                height="80"
+                loading="eager"
+                onLoad={() => setLogoLoaded(true)}
+                className={`
+                  w-full h-full
+                  object-contain
+                  rounded-full
+                  transition-opacity duration-300
+                  ${logoLoaded ? "opacity-100" : "opacity-0"}
+                `}
+              />
             </div>
           </Link>
 
@@ -111,8 +106,8 @@ const Header = () => {
                 key={item.path}
                 to={item.path}
                 className={`transition-colors ${isActivePath(item.path)
-                  ? "text-[#021024] font-bold underline underline-offset-4"
-                  : "text-[#052659] font-semibold"
+                    ? "text-[#021024] font-bold underline underline-offset-4"
+                    : "text-[#052659] font-semibold"
                   }`}
               >
                 {item.name}

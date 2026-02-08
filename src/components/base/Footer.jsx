@@ -7,6 +7,8 @@ import {
   Mail,
   ArrowUp,
   CheckCircle,
+  // LogIn,
+  Settings,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -91,6 +93,15 @@ const Footer = () => {
           >
             <Mail />
           </button>
+
+          {/* ===== Login Icon ===== */}
+          <Link
+            to="/login"
+            className="text-white hover:opacity-80 transition"
+            aria-label="Login"
+          >
+            <Settings />
+          </Link>
         </div>
 
         {/* ================= FOOTER LINKS ================= */}
@@ -113,7 +124,10 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="https://drive.google.com/file/d/1KFyUJdq4RROBngZ4wR3YVKuNVdAo5dlI/view?usp=drivesdk" className="hover:underline">
+                <a
+                  href="https://drive.google.com/file/d/1KFyUJdq4RROBngZ4wR3YVKuNVdAo5dlI/view?usp=drivesdk"
+                  className="hover:underline"
+                >
                   Resume
                 </a>
               </li>
@@ -165,33 +179,15 @@ const Footer = () => {
                   Disclaimer
                 </Link>
               </li>
-              {/* Optional but recommended */}
-              <li>
-                <Link to="/login" className="hover:underline">
-                  Login
-                </Link>
-              </li>
             </ul>
           </div>
-
-          {/* Column 4: Work With Me */}
-          {/* <div>
-            <h4 className="font-semibold text-lg mb-4 border-b border-white/30 pb-2">
-              Work With Me
-            </h4>
-            <ul className="space-y-2 text-sm opacity-90">
-              <li>Freelance Full Stack Projects</li>
-              <li>Web & PWA Development</li>
-              <li>Performance & SEO Optimization</li>
-            </ul>
-          </div> */}
         </div>
 
         {/* ================= SCROLL TO TOP ================= */}
         <button
           aria-label="Scroll to top"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="
+          className="hidden
             absolute
             bottom-6
             right-6
@@ -200,7 +196,7 @@ const Footer = () => {
             rounded-full
             bg-white
             text-[#021024]
-            flex
+            md:flex
             items-center
             justify-center
             shadow-lg
@@ -212,7 +208,7 @@ const Footer = () => {
         </button>
 
         {/* ================= COPYRIGHT ================= */}
-        <div className="text-center text-white/70 text-sm mt-16">
+        <div className="text-center text-white/70 text-sm  mt-8  md:mt-16 mb-24 md:mb-0">
           © {new Date().getFullYear()} Prashant Jha. All rights reserved.
         </div>
       </div>

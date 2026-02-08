@@ -54,7 +54,6 @@ The project is designed with **performance, SEO, accessibility, and scalability*
 - Home
 - About
 - Services
-- Pricing
 - Blog
 - Contact
 - Terms & Conditions

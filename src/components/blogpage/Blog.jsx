@@ -1,31 +1,23 @@
-import React, { memo, useEffect, useState, useRef } from "react";
+import React, {
+    memo,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from "react";
 import { motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
 import { api } from "../../lib/api";
+import { Share2, Search } from "lucide-react";
 
+/* =====================
+   ANIMATIONS
+===================== */
 const fadeUp = {
     initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0 },
 };
 
-/* =====================
-   DATE FORMATTER (IST)
-===================== */
-const formatISTDate = (date) => {
-    return new Date(date).toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-    });
-};
-
-/* =====================
-   ANIMATIONS
-===================== */
 const pageSpring = {
     hidden: { opacity: 0, y: 40 },
     visible: {
@@ -45,6 +37,22 @@ const itemSpring = {
 };
 
 /* =====================
+   DATE FORMATTER (IST)
+===================== */
+const formatISTDate = (date) => {
+    return new Date(date).toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
+};
+
+
+/* =====================
    BLOG PAGE
 ===================== */
 function Blog() {
@@ -52,8 +60,14 @@ function Blog() {
     const [loading, setLoading] = useState(true);
     const [loadedOnce, setLoadedOnce] = useState(false);
 
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
     const abortRef = useRef(null);
 
+    /* =====================
+       FETCH BLOGS
+    ===================== */
     useEffect(() => {
         abortRef.current = new AbortController();
 
@@ -78,6 +92,38 @@ function Blog() {
         return () => abortRef.current?.abort();
     }, []);
 
+    /* =====================
+       DEBOUNCE SEARCH
+    ===================== */
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search.trim().toLowerCase());
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    /* =====================
+       FILTERED BLOGS
+    ===================== */
+    const filteredBlogs = useMemo(() => {
+        if (!debouncedSearch) return blogs;
+
+        return blogs.filter((blog) => {
+            const title = blog.title?.toLowerCase() || "";
+            const slug = blog.slug?.toLowerCase() || "";
+            const author = blog.profiles?.name?.toLowerCase() || "";
+            const date = formatISTDate(blog.created_at).toLowerCase();
+
+            return (
+                title.includes(debouncedSearch) ||
+                slug.includes(debouncedSearch) ||
+                author.includes(debouncedSearch) ||
+                date.includes(debouncedSearch)
+            );
+        });
+    }, [blogs, debouncedSearch]);
+
     if (loading) return <BlogSkeletonList />;
 
     if (loadedOnce && blogs.length === 0) {
@@ -85,21 +131,35 @@ function Blog() {
     }
 
     /* =====================
-       HELPERS FROM content_blocks
+       SHARE HANDLER
     ===================== */
-    const extractImages = (blocks = []) =>
-        blocks
-            .filter(
-                (b) => b.type === "media" && b.media?.fileType === "image"
-            )
-            .map((b) => b.media.url);
+    const getPublicBlogUrl = (slug) =>
+        `${window.location.origin}/blogs/${slug}`;
 
-    const extractText = (blocks = [], maxParagraphs = 3) => {
-        const paragraphs = blocks
-            .filter((b) => b.type === "paragraph")
-            .map((b) => b.text);
+    const shareBlog = async (blog) => {
+        if (!blog.slug) return;
 
-        return paragraphs.slice(0, maxParagraphs);
+        const url = getPublicBlogUrl(blog.slug);
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: blog.title,
+                    text: blog.title,
+                    url,
+                });
+                return;
+            } catch {
+                return;
+            }
+        }
+
+        try {
+            await navigator.clipboard.writeText(url);
+            alert("Blog link copied to clipboard");
+        } catch {
+            alert("Unable to share blog link");
+        }
     };
 
     return (
@@ -109,27 +169,34 @@ function Blog() {
             animate="visible"
             className="min-h-screen bg-[#F8FAFC] px-4 md:py-40 py-28 new-font"
         >
-            <div className="max-w-3xl mx-auto space-y-12">
-                {blogs.map((blog) => {
-                    const images = extractImages(blog.content_blocks);
-                    const textParas = extractText(blog.content_blocks);
+            <div className="max-w-3xl mx-auto space-y-8">
+                {/* SEARCH BAR */}
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search by title, author, date or slug"
+                        className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring"
+                    />
+                </div>
 
-                    return (
-                        <motion.article
-                            key={blog.id}
-                            variants={itemSpring}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-80px" }}
-                            className="bg-white rounded-xl shadow-md overflow-hidden"
-                        >
-                            {/* TITLE */}
-                            <div className="p-6 pb-2">
+                {filteredBlogs.map((blog) => (
+                    <motion.article
+                        key={blog.id}
+                        variants={itemSpring}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-80px" }}
+                        className="bg-white rounded-xl shadow-md overflow-hidden"
+                    >
+                        {/* HEADER */}
+                        <div className="p-6 pb-2 flex justify-between items-start">
+                            <div>
                                 <h2 className="text-xl sm:text-2xl font-bold">
                                     {blog.title}
                                 </h2>
 
-                                {/* AUTHOR + DATE */}
                                 <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                     By{" "}
                                     <span className="font-medium text-gray-700">
@@ -139,101 +206,85 @@ function Blog() {
                                 </p>
                             </div>
 
-                            {/* IMAGES */}
-                            {images.length > 0 && (
-                                <BlogImageGallery images={images} />
+                            {blog.slug && (
+                                <button
+                                    onClick={() => shareBlog(blog)}
+                                    className="text-gray-600 hover:text-black"
+                                    aria-label="Share blog"
+                                >
+                                    <Share2 size={18} />
+                                </button>
                             )}
+                        </div>
 
-                            {/* TEXT */}
-                            <div className="p-6 pt-4 text-gray-700 text-sm sm:text-base leading-relaxed space-y-4">
-                                {textParas.map((para, i) => (
-                                    <p key={i} className="text-justify">
-                                        {para}
-                                    </p>
-                                ))}
-                            </div>
-                        </motion.article>
-                    );
-                })}
+                        {/* CONTENT BLOCKS */}
+                        <div className="space-y-5">
+                            {blog.content_blocks?.map((block) => {
+                                if (block.type === "heading") {
+                                    return (
+                                        <h3
+                                            key={block.id}
+                                            className="px-6 text-lg font-semibold"
+                                        >
+                                            {block.text}
+                                        </h3>
+                                    );
+                                }
+
+                                if (block.type === "paragraph") {
+                                    return (
+                                        <p
+                                            key={block.id}
+                                            className="px-6 text-gray-700 text-sm sm:text-base leading-relaxed text-justify"
+                                        >
+                                            {block.text}
+                                        </p>
+                                    );
+                                }
+
+                                if (
+                                    block.type === "media" &&
+                                    block.media?.fileType === "image"
+                                ) {
+                                    return (
+                                        <BlogImageGallery
+                                            key={block.id}
+                                            images={[block.media.url]}
+                                        />
+                                    );
+                                }
+
+                                return null;
+                            })}
+                        </div>
+                    </motion.article>
+                ))}
             </div>
         </motion.section>
     );
 }
 
 /* =====================
-   IMAGE GALLERY
+   IMAGE COMPONENTS
 ===================== */
-const BlogImageGallery = memo(({ images }) => {
-    const count = images.length;
+const BlogImageGallery = memo(({ images }) => (
+    <SingleImage src={images[0]} />
+));
 
-    if (count === 1) return <SingleImage src={images[0]} />;
-
-    if (count === 2) {
-        return (
-            <div className="grid grid-cols-2 gap-1">
-                {images.slice(0, 2).map((src, i) => (
-                    <GridImage key={i} src={src} />
-                ))}
-            </div>
-        );
-    }
-
-    if (count === 3) {
-        return (
-            <div className="grid grid-cols-2 gap-1">
-                <div className="col-span-2">
-                    <RectImage src={images[0]} />
-                </div>
-                <GridImage src={images[1]} />
-                <GridImage src={images[2]} />
-            </div>
-        );
-    }
-
-    return (
-        <div className="grid grid-cols-2 gap-1 p-3 md:p-8">
-            {images.slice(0, 4).map((src, i) => (
-                <GridImage key={i} src={src} />
-            ))}
-        </div>
-    );
-});
-
-/* =====================
-   IMAGE TYPES
-===================== */
-const SingleImage = memo(({ src }) => <RectImage src={src} />);
-
-const RectImage = memo(({ src }) => {
+const SingleImage = memo(({ src }) => {
     const [loaded, setLoaded] = useState(false);
 
     return (
-        <div className="relative w-full aspect-[4/3] bg-gray-200 overflow-hidden">
-            {!loaded && <div className="absolute inset-0 bg-gray-300 animate-pulse" />}
+        <div className="relative w-full min-h-[240px] bg-gray-200 overflow-hidden">
+            {!loaded && (
+                <div className="absolute inset-0 bg-gray-300 animate-pulse" />
+            )}
             <img
                 src={src}
                 alt=""
                 loading="lazy"
                 onLoad={() => setLoaded(true)}
-                className={`w-full h-full object-cover transition-all duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"
-                    }`}
-            />
-        </div>
-    );
-});
-
-const GridImage = memo(({ src }) => {
-    const [loaded, setLoaded] = useState(false);
-
-    return (
-        <div className="relative w-full aspect-square bg-gray-200 overflow-hidden">
-            {!loaded && <div className="absolute inset-0 bg-gray-300 animate-pulse" />}
-            <img
-                src={src}
-                alt=""
-                loading="lazy"
-                onLoad={() => setLoaded(true)}
-                className={`w-full h-full object-cover transition-all duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"
+                className={`w-full h-full object-cover transition-all p-3 duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"
                     }`}
             />
         </div>
@@ -248,17 +299,12 @@ function BlogSkeletonList() {
         <div className="min-h-screen bg-[#F8FAFC] px-4 py-24">
             <div className="max-w-3xl mx-auto space-y-10">
                 {[1, 2, 3].map((i) => (
-                    <div
-                        key={i}
-                        className="bg-white rounded-xl shadow-md overflow-hidden"
-                    >
-                        <div className="h-6 w-3/4 m-6 bg-gray-200 animate-pulse rounded" />
-                        <div className="h-3 w-1/3 ml-6 mb-4 bg-gray-200 animate-pulse rounded" />
-                        <div className="h-64 bg-gray-200 animate-pulse" />
-                        <div className="p-6 space-y-3">
-                            <div className="h-4 bg-gray-200 animate-pulse rounded" />
-                            <div className="h-4 w-5/6 bg-gray-200 animate-pulse rounded" />
-                        </div>
+                    <div key={i} className="bg-white rounded-xl shadow-md p-6 space-y-4">
+                        <div className="h-6 w-3/4 bg-gray-200 animate-pulse rounded" />
+                        <div className="h-4 w-1/3 bg-gray-200 animate-pulse rounded" />
+                        <div className="h-56 bg-gray-200 animate-pulse rounded" />
+                        <div className="h-4 bg-gray-200 animate-pulse rounded" />
+                        <div className="h-4 w-5/6 bg-gray-200 animate-pulse rounded" />
                     </div>
                 ))}
             </div>
@@ -266,13 +312,12 @@ function BlogSkeletonList() {
     );
 }
 
+
 /* =====================
    EMPTY STATE
 ===================== */
 function BlogUnderDevelopment() {
     return (
-
-
         <section
             className="
         relative
@@ -396,11 +441,7 @@ function BlogUnderDevelopment() {
                 </a>
             </motion.div>
         </section>
-
     );
 }
 
 export default memo(Blog);
-
-
-
