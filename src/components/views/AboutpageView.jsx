@@ -39,18 +39,18 @@ const AboutPageView = () => {
         {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashantjhadev.in/about"
+          href="https://www.prashantjhadev.in/about"
         />
 
         {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/about"
+          href="https://www.prashantjhadev.in/about"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/about"
+          href="https://www.prashantjhadev.in/about"
           hrefLang="x-default"
         />
 
@@ -67,7 +67,7 @@ const AboutPageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashantjhadev.in/about"
+          content="https://www.prashantjhadev.in/about"
         />
 
         {/* Twitter */}
@@ -87,8 +87,8 @@ const AboutPageView = () => {
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Prashant Jha",
-            url: "https://prashantjhadev.in/",
-            image: "https://prashantjhadev.in/logo.png",
+            url: "https://www.prashantjhadev.in/",
+            image: "https://www.prashantjhadev.in/logo.png",
             jobTitle: "Full Stack MERN Developer",
             description:
               "Full Stack MERN Developer specializing in SEO-optimized, high-performance, and PWA-ready web applications for global clients.",

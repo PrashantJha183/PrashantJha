@@ -38,17 +38,17 @@ const HomepageView = () => {
         <meta name="language" content="en" />
 
         {/* FIXED CANONICAL */}
-        <link rel="canonical" href="https://prashantjhadev.in/" />
+        <link rel="canonical" href="https://www.prashantjhadev.in/" />
 
         {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/"
+          href="https://www.prashantjhadev.in/"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/"
+          href="https://www.prashantjhadev.in/"
           hrefLang="x-default"
         />
 
@@ -63,7 +63,7 @@ const HomepageView = () => {
           property="og:description"
           content="SEO-friendly, high-performance MERN stack applications and PWA solutions trusted by global clients."
         />
-        <meta property="og:url" content="https://prashantjhadev.in/" />
+        <meta property="og:url" content="https://www.prashantjhadev.in/" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -83,8 +83,8 @@ const HomepageView = () => {
             "@type": "Person",
             name: "Prashant Jha",
             jobTitle: "Full Stack MERN Developer",
-            url: "https://prashantjhadev.in/",
-            image: "https://prashantjhadev.in/logo.png",
+            url: "https://www.prashantjhadev.in/",
+            image: "https://www.prashantjhadev.in/logo.png",
             description:
               "Full Stack MERN Developer specializing in SEO-optimized, high-performance, PWA-ready web applications for global clients.",
             knowsAbout: [
@@ -112,8 +112,8 @@ const HomepageView = () => {
             "@context": "https://schema.org",
             "@type": "Brand",
             name: "Prashant Jha",
-            url: "https://prashantjhadev.in/",
-            logo: "https://prashantjhadev.in/logo.png",
+            url: "https://www.prashantjhadev.in/",
+            logo: "https://www.prashantjhadev.in/logo.png",
           })}
         </script>
       </Helmet>

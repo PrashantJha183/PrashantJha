@@ -118,7 +118,7 @@ const ScrollToTop = () => {
    HELPERS
 ========================= */
 const getCanonicalUrl = (pathname) => {
-  const base = "https://prashantjhadev.in";
+  const base = "https://www.prashantjhadev.in";
   return pathname === "/" ? base : `${base}${pathname}`;
 };
 
@@ -157,25 +157,25 @@ const AppLayout = () => {
         <link
           rel="alternate"
           hreflang="x-default"
-          href="https://prashantjhadev.in/"
+          href="https://www.prashantjhadev.in/"
         />
-        <link rel="alternate" hreflang="en" href="https://prashantjhadev.in/" />
+        <link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/" />
 
         {/* Enable ONLY when content exists */}
         <link
           rel="alternate"
           hreflang="hi"
-          href="https://prashantjhadev.in/hi/"
+          href="https://www.prashantjhadev.in/hi/"
         />
         <link
           rel="alternate"
           hreflang="fr"
-          href="https://prashantjhadev.in/fr/"
+          href="https://www.prashantjhadev.in/fr/"
         />
         <link
           rel="alternate"
           hreflang="ar"
-          href="https://prashantjhadev.in/ar/"
+          href="https://www.prashantjhadev.in/ar/"
         />
       </Helmet>
 

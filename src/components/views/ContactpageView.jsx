@@ -34,18 +34,18 @@ const ContactPageView = () => {
         {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashantjhadev.in/contact"
+          href="https://www.prashantjhadev.in/contact"
         />
 
         {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/contact"
+          href="https://www.prashantjhadev.in/contact"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/contact"
+          href="https://www.prashantjhadev.in/contact"
           hrefLang="x-default"
         />
 
@@ -62,7 +62,7 @@ const ContactPageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashantjhadev.in/contact"
+          content="https://www.prashantjhadev.in/contact"
         />
 
         {/* Twitter */}
@@ -82,14 +82,14 @@ const ContactPageView = () => {
             "@context": "https://schema.org",
             "@type": "ContactPage",
             name: "Contact Prashant Jha",
-            url: "https://prashantjhadev.in/contact",
+            url: "https://www.prashantjhadev.in/contact",
             description:
               "Contact Prashant Jha, Full Stack MERN Developer, for SEO-optimized, high-performance web and PWA development services for global clients.",
             about: {
               "@type": "Person",
               name: "Prashant Jha",
               jobTitle: "Full Stack MERN Developer",
-              url: "https://prashantjhadev.in/",
+              url: "https://www.prashantjhadev.in/",
               email: "mailto:jhaprashant.works@gmail.com",
               sameAs: [
                 "https://www.linkedin.com/in/jhaprashant183/",

@@ -10,4 +10,4 @@ Disallow: /unauthorized
 Allow: /
 
 # Canonical sitemap (GLOBAL)
-Sitemap: https://prashantjhadev.in/sitemap.xml
+Sitemap: https://www.prashantjhadev.in/sitemap.xml

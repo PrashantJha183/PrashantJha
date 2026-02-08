@@ -56,18 +56,18 @@ const ServicePageView = () => {
         {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashantjhadev.in/services"
+          href="https://www.prashantjhadev.in/services"
         />
 
         {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/services"
+          href="https://www.prashantjhadev.in/services"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/services"
+          href="https://www.prashantjhadev.in/services"
           hrefLang="x-default"
         />
 
@@ -84,7 +84,7 @@ const ServicePageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashantjhadev.in/services"
+          content="https://www.prashantjhadev.in/services"
         />
 
         {/* Twitter */}
@@ -109,7 +109,7 @@ const ServicePageView = () => {
             provider: {
               "@type": "Person",
               name: "Prashant Jha",
-              url: "https://prashantjhadev.in/"
+              url: "https://www.prashantjhadev.in/"
             },
             areaServed: {
               "@type": "AdministrativeArea",

@@ -51,18 +51,18 @@ const BlogPageView = () => {
         {/* FIXED CANONICAL */}
         <link
           rel="canonical"
-          href="https://prashantjhadev.in/blog"
+          href="https://www.prashantjhadev.in/blog"
         />
 
         {/* CORRECT GLOBAL HREFLANG */}
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/blog"
+          href="https://www.prashantjhadev.in/blog"
           hrefLang="en"
         />
         <link
           rel="alternate"
-          href="https://prashantjhadev.in/blog"
+          href="https://www.prashantjhadev.in/blog"
           hrefLang="x-default"
         />
 
@@ -79,7 +79,7 @@ const BlogPageView = () => {
         />
         <meta
           property="og:url"
-          content="https://prashantjhadev.in/blog"
+          content="https://www.prashantjhadev.in/blog"
         />
 
         {/* Twitter */}
@@ -96,21 +96,21 @@ const BlogPageView = () => {
             "@context": "https://schema.org",
             "@type": "Blog",
             name: "Prashant Jha – Tech Blog",
-            url: "https://prashantjhadev.in/blog",
+            url: "https://www.prashantjhadev.in/blog",
             description:
               "Technical articles and insights on MERN stack development, React, Node.js, SEO optimization, PWA performance, and modern web engineering practices.",
             inLanguage: "en",
             author: {
               "@type": "Person",
               name: "Prashant Jha",
-              url: "https://prashantjhadev.in/",
+              url: "https://www.prashantjhadev.in/",
             },
             publisher: {
               "@type": "Brand",
               name: "Prashant Jha",
               logo: {
                 "@type": "ImageObject",
-                url: "https://prashantjhadev.in/logo.png",
+                url: "https://www.prashantjhadev.in/logo.png",
               },
             },
           })}

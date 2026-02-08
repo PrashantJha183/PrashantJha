@@ -4,80 +4,80 @@
 
     <!-- ========== HOME / CANONICAL ========== -->
     <url>
-        <loc>https://prashantjhadev.in/</loc>
+        <loc>https://www.prashantjhadev.in/</loc>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/" />
     </url>
 
     <!-- ========== ABOUT ========== -->
     <url>
-        <loc>https://prashantjhadev.in/about</loc>
+        <loc>https://www.prashantjhadev.in/about</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/about" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/about" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/about" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/about" />
     </url>
 
     <!-- ========== SERVICES ========== -->
     <url>
-        <loc>https://prashantjhadev.in/services</loc>
+        <loc>https://www.prashantjhadev.in/services</loc>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/services" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/services" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/services" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/services" />
     </url>
 
     <!-- ========== BLOG ========== -->
     <url>
-        <loc>https://prashantjhadev.in/blog</loc>
+        <loc>https://www.prashantjhadev.in/blog</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/blog" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/blog" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/blog" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/blog" />
     </url>
 
     <!-- ========== CONTACT ========== -->
     <url>
-        <loc>https://prashantjhadev.in/contact</loc>
+        <loc>https://www.prashantjhadev.in/contact</loc>
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/contact" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/contact" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/contact" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/contact" />
     </url>
 
     <!-- ========== LEGAL PAGES ========== -->
-    <url>
-        <loc>https://prashantjhadev.in/terms-and-conditions</loc>
+    <!-- <url>
+        <loc>https://www.prashantjhadev.in/terms-and-conditions</loc>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/terms-and-conditions" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/terms-and-conditions" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/terms-and-conditions" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/terms-and-conditions" />
     </url>
 
     <url>
-        <loc>https://prashantjhadev.in/privacy-policy</loc>
+        <loc>https://www.prashantjhadev.in/privacy-policy</loc>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/privacy-policy" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/privacy-policy" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/privacy-policy" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/privacy-policy" />
     </url>
 
     <url>
-        <loc>https://prashantjhadev.in/disclaimer</loc>
+        <loc>https://www.prashantjhadev.in/disclaimer</loc>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
 
-        <xhtml:link rel="alternate" hreflang="en" href="https://prashantjhadev.in/disclaimer" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://prashantjhadev.in/disclaimer" />
-    </url>
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/disclaimer" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/disclaimer" />
+    </url> -->
 
 </urlset>
