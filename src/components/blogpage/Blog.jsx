@@ -6,34 +6,17 @@ import React, {
     useMemo,
 } from "react";
 import { motion } from "framer-motion";
-import { FiArrowRight } from "react-icons/fi";
 import { api } from "../../lib/api";
 import { Share2, Search } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { FiArrowRight } from "react-icons/fi";
 
 /* =====================
-   ANIMATIONS
+   ANIMATION VARIANTS
 ===================== */
 const fadeUp = {
-    initial: { opacity: 0, y: 30 },
+    initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-};
-
-const pageSpring = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { type: "spring", stiffness: 80, damping: 14 },
-    },
-};
-
-const itemSpring = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { type: "spring", stiffness: 70, damping: 12 },
-    },
 };
 
 /* =====================
@@ -51,11 +34,9 @@ const formatISTDate = (date) => {
     });
 };
 
-
-/* =====================
-   BLOG PAGE
-===================== */
 function Blog() {
+    const { slug } = useParams();
+
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadedOnce, setLoadedOnce] = useState(false);
@@ -73,14 +54,20 @@ function Blog() {
 
         const fetchBlogs = async () => {
             try {
-                const res = await api.get("/public-blogs", {
-                    signal: abortRef.current.signal,
-                });
-
-                setBlogs(Array.isArray(res.data?.blogs) ? res.data.blogs : []);
+                if (slug) {
+                    const res = await api.get(`/public-blogs/${slug}`, {
+                        signal: abortRef.current.signal,
+                    });
+                    setBlogs(res.data?.blog ? [res.data.blog] : []);
+                } else {
+                    const res = await api.get("/public-blogs", {
+                        signal: abortRef.current.signal,
+                    });
+                    setBlogs(Array.isArray(res.data?.blogs) ? res.data.blogs : []);
+                }
             } catch (err) {
                 if (err.name !== "CanceledError") {
-                    console.error("Public blogs fetch failed");
+                    console.error("Public blogs fetch failed", err);
                 }
             } finally {
                 setLoading(false);
@@ -90,55 +77,51 @@ function Blog() {
 
         fetchBlogs();
         return () => abortRef.current?.abort();
-    }, []);
+    }, [slug]);
 
     /* =====================
        DEBOUNCE SEARCH
     ===================== */
     useEffect(() => {
+        if (slug) return;
         const timer = setTimeout(() => {
             setDebouncedSearch(search.trim().toLowerCase());
         }, 350);
-
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [search, slug]);
 
     /* =====================
-       FILTERED BLOGS
+       FILTER BLOGS
     ===================== */
     const filteredBlogs = useMemo(() => {
-        if (!debouncedSearch) return blogs;
+        if (slug || !debouncedSearch) return blogs;
 
         return blogs.filter((blog) => {
             const title = blog.title?.toLowerCase() || "";
-            const slug = blog.slug?.toLowerCase() || "";
+            const blogSlug = blog.slug?.toLowerCase() || "";
             const author = blog.profiles?.name?.toLowerCase() || "";
             const date = formatISTDate(blog.created_at).toLowerCase();
 
             return (
                 title.includes(debouncedSearch) ||
-                slug.includes(debouncedSearch) ||
+                blogSlug.includes(debouncedSearch) ||
                 author.includes(debouncedSearch) ||
                 date.includes(debouncedSearch)
             );
         });
-    }, [blogs, debouncedSearch]);
+    }, [blogs, debouncedSearch, slug]);
 
     if (loading) return <BlogSkeletonList />;
-
-    if (loadedOnce && blogs.length === 0) {
-        return <BlogUnderDevelopment />;
-    }
+    if (loadedOnce && blogs.length === 0) return <BlogUnderDevelopment />;
 
     /* =====================
        SHARE HANDLER
     ===================== */
     const getPublicBlogUrl = (slug) =>
-        `${window.location.origin}/blogs/${slug}`;
+        `${window.location.origin}/blog/${slug}`;
 
     const shareBlog = async (blog) => {
         if (!blog.slug) return;
-
         const url = getPublicBlogUrl(blog.slug);
 
         if (navigator.share) {
@@ -158,134 +141,78 @@ function Blog() {
             await navigator.clipboard.writeText(url);
             alert("Blog link copied to clipboard");
         } catch {
-            alert("Unable to share blog link");
+            alert(url);
         }
     };
 
     return (
-        <motion.section
-            variants={pageSpring}
-            initial="hidden"
-            animate="visible"
-            className="min-h-screen bg-[#F8FAFC] px-4 md:py-40 py-28 new-font"
-        >
+        <section className="min-h-screen bg-[#F8FAFC] px-4 py-28 new-font">
             <div className="max-w-3xl mx-auto space-y-8">
-                {/* SEARCH BAR */}
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search by title, author, date or slug"
-                        className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring"
-                    />
-                </div>
+
+                {!slug && (
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search by title, author, date or slug"
+                            className="w-full pl-10 pr-4 py-3 border rounded-lg"
+                        />
+                    </div>
+                )}
 
                 {filteredBlogs.map((blog) => (
-                    <motion.article
-                        key={blog.id}
-                        variants={itemSpring}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-80px" }}
-                        className="bg-white rounded-xl shadow-md overflow-hidden"
-                    >
-                        {/* HEADER */}
-                        <div className="p-6 pb-2 flex justify-between items-start">
+                    <article key={blog.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div className="p-6 pb-2 flex justify-between">
                             <div>
-                                <h2 className="text-xl sm:text-2xl font-bold">
-                                    {blog.title}
-                                </h2>
-
-                                <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                                    By{" "}
-                                    <span className="font-medium text-gray-700">
-                                        {blog.profiles?.name || "Admin"}
-                                    </span>{" "}
-                                    • {formatISTDate(blog.created_at)} IST
+                                <h2 className="text-xl font-bold">{blog.title}</h2>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    By {blog.profiles?.name || "Admin"} • {formatISTDate(blog.created_at)} IST
                                 </p>
                             </div>
 
                             {blog.slug && (
-                                <button
-                                    onClick={() => shareBlog(blog)}
-                                    className="text-gray-600 hover:text-black"
-                                    aria-label="Share blog"
-                                >
+                                <button onClick={() => shareBlog(blog)}>
                                     <Share2 size={18} />
                                 </button>
                             )}
                         </div>
 
-                        {/* CONTENT BLOCKS */}
                         <div className="space-y-5">
                             {blog.content_blocks?.map((block) => {
                                 if (block.type === "heading") {
-                                    return (
-                                        <h3
-                                            key={block.id}
-                                            className="px-6 text-lg font-semibold"
-                                        >
-                                            {block.text}
-                                        </h3>
-                                    );
+                                    return <h3 key={block.id} className="px-6 text-lg font-semibold">{block.text}</h3>;
                                 }
-
                                 if (block.type === "paragraph") {
-                                    return (
-                                        <p
-                                            key={block.id}
-                                            className="px-6 text-gray-700 text-sm sm:text-base leading-relaxed text-justify"
-                                        >
-                                            {block.text}
-                                        </p>
-                                    );
+                                    return <p key={block.id} className="px-6 text-gray-700">{block.text}</p>;
                                 }
-
-                                if (
-                                    block.type === "media" &&
-                                    block.media?.fileType === "image"
-                                ) {
-                                    return (
-                                        <BlogImageGallery
-                                            key={block.id}
-                                            images={[block.media.url]}
-                                        />
-                                    );
+                                if (block.type === "media" && block.media?.fileType === "image") {
+                                    return <BlogImage key={block.id} src={block.media.url} />;
                                 }
-
                                 return null;
                             })}
                         </div>
-                    </motion.article>
+                    </article>
                 ))}
             </div>
-        </motion.section>
+        </section>
     );
 }
 
 /* =====================
-   IMAGE COMPONENTS
+   IMAGE
 ===================== */
-const BlogImageGallery = memo(({ images }) => (
-    <SingleImage src={images[0]} />
-));
-
-const SingleImage = memo(({ src }) => {
+const BlogImage = memo(({ src }) => {
     const [loaded, setLoaded] = useState(false);
 
     return (
-        <div className="relative w-full min-h-[240px] bg-gray-200 overflow-hidden">
-            {!loaded && (
-                <div className="absolute inset-0 bg-gray-300 animate-pulse" />
-            )}
+        <div className="relative min-h-[240px] p-3 bg-gray-200">
+            {!loaded && <div className="absolute inset-0 animate-pulse bg-gray-300" />}
             <img
                 src={src}
-                alt=""
                 loading="lazy"
                 onLoad={() => setLoaded(true)}
-                className={`w-full h-full object-cover transition-all p-3 duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"
-                    }`}
+                className={`w-full object-cover transition duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"}`}
             />
         </div>
     );
@@ -311,7 +238,6 @@ function BlogSkeletonList() {
         </div>
     );
 }
-
 
 /* =====================
    EMPTY STATE
