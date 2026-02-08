@@ -146,7 +146,7 @@ function Blog() {
     };
 
     return (
-        <section className="min-h-screen bg-[#F8FAFC] px-4 py-28 new-font">
+        <section className="min-h-screen bg-[#F8FAFC] px-4 py-28 md:py-40 new-font">
             <div className="max-w-3xl mx-auto space-y-8">
 
                 {!slug && (
@@ -155,18 +155,18 @@ function Blog() {
                         <input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search by title, author, date or slug"
+                            placeholder="Search by title, author, date or title"
                             className="w-full pl-10 pr-4 py-3 border rounded-lg"
                         />
                     </div>
                 )}
 
                 {filteredBlogs.map((blog) => (
-                    <article key={blog.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                    <article key={blog.id} className="bg-white rounded-xl shadow-md overflow-hidden pb-8">
                         <div className="p-6 pb-2 flex justify-between">
                             <div>
                                 <h2 className="text-xl font-bold">{blog.title}</h2>
-                                <p className="text-sm text-gray-500 mt-1">
+                                <p className="text-sm text-gray-500 mt-1 font-semibold">
                                     By {blog.profiles?.name || "Admin"} • {formatISTDate(blog.created_at)} IST
                                 </p>
                             </div>
@@ -184,7 +184,7 @@ function Blog() {
                                     return <h3 key={block.id} className="px-6 text-lg font-semibold">{block.text}</h3>;
                                 }
                                 if (block.type === "paragraph") {
-                                    return <p key={block.id} className="px-6 text-gray-700">{block.text}</p>;
+                                    return <p key={block.id} className="px-6 text-gray-700 text-justify">{block.text}</p>;
                                 }
                                 if (block.type === "media" && block.media?.fileType === "image") {
                                     return <BlogImage key={block.id} src={block.media.url} />;
