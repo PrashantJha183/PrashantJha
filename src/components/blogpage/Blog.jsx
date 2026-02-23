@@ -10,6 +10,7 @@ import { api } from "../../lib/api";
 import { Share2, Search } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { FiArrowRight } from "react-icons/fi";
+import { Helmet } from "react-helmet-async";
 
 /* =====================
    ANIMATION VARIANTS
@@ -111,12 +112,22 @@ function Blog() {
         });
     }, [blogs, debouncedSearch, slug]);
 
+    const blog = slug ? filteredBlogs[0] : null;
+
+    const getMetaDescription = (blog) => {
+        if (!blog) return "";
+        const firstParagraph = blog.content_blocks?.find(
+            (b) => b.type === "paragraph"
+        );
+        return (
+            firstParagraph?.text?.replace(/<[^>]+>/g, "").slice(0, 160) ||
+            blog.title
+        );
+    };
+
     if (loading) return <BlogSkeletonList />;
     if (loadedOnce && blogs.length === 0) return <BlogUnderDevelopment />;
 
-    /* =====================
-       SHARE HANDLER
-    ===================== */
     const getPublicBlogUrl = (slug) =>
         `${window.location.origin}/blog/${slug}`;
 
@@ -146,62 +157,125 @@ function Blog() {
     };
 
     return (
-        <section className="min-h-screen bg-[#F8FAFC] px-4 py-28 md:py-40 new-font">
-            <div className="max-w-3xl mx-auto space-y-8">
+        <>
+            {/* ================= SEO FOR SINGLE BLOG ================= */}
+            {slug && blog && (
+                <Helmet>
+                    <title>{blog.title} | Prashant Jha</title>
 
-                {!slug && (
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search by title, author, date or title"
-                            className="w-full pl-10 pr-4 py-3 border rounded-lg"
-                        />
-                    </div>
-                )}
+                    <meta
+                        name="description"
+                        content={getMetaDescription(blog)}
+                    />
 
-                {filteredBlogs.map((blog) => (
-                    <article key={blog.id} className="bg-white rounded-xl shadow-md overflow-hidden pb-8">
-                        <div className="p-6 pb-2 flex justify-between">
-                            <div>
-                                <h2 className="text-xl font-bold">{blog.title}</h2>
-                                <p className="text-sm text-gray-500 mt-1 font-semibold">
-                                    By {blog.profiles?.name || "Admin"} • {formatISTDate(blog.created_at)} IST
-                                </p>
+                    <link
+                        rel="canonical"
+                        href={`https://www.prashantjhadev.in/blog/${blog.slug}`}
+                    />
+
+                    <meta property="og:type" content="article" />
+                    <meta property="og:title" content={blog.title} />
+                    <meta
+                        property="og:description"
+                        content={getMetaDescription(blog)}
+                    />
+                    <meta
+                        property="og:url"
+                        content={`https://www.prashantjhadev.in/blog/${blog.slug}`}
+                    />
+
+                    <meta name="twitter:card" content="summary_large_image" />
+                    <meta name="twitter:title" content={blog.title} />
+                    <meta
+                        name="twitter:description"
+                        content={getMetaDescription(blog)}
+                    />
+
+                    <script type="application/ld+json">
+                        {JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "BlogPosting",
+                            headline: blog.title,
+                            description: getMetaDescription(blog),
+                            datePublished: blog.created_at,
+                            dateModified: blog.updated_at || blog.created_at,
+                            author: {
+                                "@type": "Person",
+                                name: "Prashant Jha",
+                                url: "https://www.prashantjhadev.in/about",
+                            },
+                            publisher: {
+                                "@type": "Organization",
+                                name: "Prashant Jha",
+                                logo: {
+                                    "@type": "ImageObject",
+                                    url: "https://www.prashantjhadev.in/logo.png",
+                                },
+                            },
+                            mainEntityOfPage: {
+                                "@type": "WebPage",
+                                "@id": `https://www.prashantjhadev.in/blog/${blog.slug}`,
+                            },
+                        })}
+                    </script>
+                </Helmet>
+            )}
+
+            {/* ================= BLOG UI ================= */}
+            <section className="min-h-screen bg-[#F8FAFC] px-4 py-28 md:py-40 new-font">
+                <div className="max-w-3xl mx-auto space-y-8">
+
+                    {!slug && (
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Search by title, author, date"
+                                className="w-full pl-10 pr-4 py-3 border rounded-lg"
+                            />
+                        </div>
+                    )}
+
+                    {filteredBlogs.map((blog) => (
+                        <article key={blog.id} className="bg-white rounded-xl shadow-md overflow-hidden pb-8">
+                            <div className="p-6 pb-2 mb-4 flex justify-between bg-[#052659]">
+                                <div className="text-[#C1E8FF]">
+                                    <h1 className="text-xl font-bold">{blog.title}</h1>
+                                    <p className="text-sm text-gray-100 mt-1 font-semibold">
+                                        By {blog.profiles?.name || "Admin"} • {formatISTDate(blog.created_at)} IST
+                                    </p>
+                                </div>
+
+                                {blog.slug && (
+                                    <button onClick={() => shareBlog(blog)}>
+                                        <Share2 size={18} className="text-gray-100" />
+                                    </button>
+                                )}
                             </div>
 
-                            {blog.slug && (
-                                <button onClick={() => shareBlog(blog)}>
-                                    <Share2 size={18} />
-                                </button>
-                            )}
-                        </div>
-
-                        <div className="space-y-5">
-                            {blog.content_blocks?.map((block) => {
-                                if (block.type === "heading") {
-                                    return <h3 key={block.id} className="px-6 text-lg font-semibold">{block.text}</h3>;
-                                }
-                                if (block.type === "paragraph") {
-                                    return <p key={block.id} className="px-6 text-gray-700 text-justify">{block.text}</p>;
-                                }
-                                if (block.type === "media" && block.media?.fileType === "image") {
-                                    return <BlogImage key={block.id} src={block.media.url} />;
-                                }
-                                return null;
-                            })}
-                        </div>
-                    </article>
-                ))}
-            </div>
-        </section>
+                            <div className="space-y-5">
+                                {blog.content_blocks?.map((block) => {
+                                    if (block.type === "heading") {
+                                        return <h2 key={block.id} className="px-6 text-lg font-semibold">{block.text}</h2>;
+                                    }
+                                    if (block.type === "paragraph") {
+                                        return <p key={block.id} className="px-6 text-gray-700 text-justify">{block.text}</p>;
+                                    }
+                                    if (block.type === "media" && block.media?.fileType === "image") {
+                                        return <BlogImage key={block.id} src={block.media.url} />;
+                                    }
+                                    return null;
+                                })}
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            </section>
+        </>
     );
 }
 
-/* =====================
-   IMAGE
-===================== */
 const BlogImage = memo(({ src }) => {
     const [loaded, setLoaded] = useState(false);
 
@@ -212,11 +286,14 @@ const BlogImage = memo(({ src }) => {
                 src={src}
                 loading="lazy"
                 onLoad={() => setLoaded(true)}
+                alt="Blog visual content"
                 className={`w-full object-cover transition duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"}`}
             />
         </div>
     );
 });
+
+
 
 /* =====================
    SKELETON
