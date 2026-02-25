@@ -7,6 +7,7 @@ import TestimonialsCarousel from "../homepage/TestimonialsCarousel";
 import Services from "../homepage/Services";
 import Gallery from "../homepage/Gallery";
 import Choose from "../homepage/Choose";
+import HomeBlog from "../homepage/HomeBlog";
 
 const HomepageView = () => {
   return (
@@ -137,6 +138,10 @@ const HomepageView = () => {
 
       <ErrorBoundary>
         <Choose />
+      </ErrorBoundary>
+
+      <ErrorBoundary>
+        <HomeBlog />
       </ErrorBoundary>
 
       <ErrorBoundary>

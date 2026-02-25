@@ -68,6 +68,16 @@
         <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/blog/frontend-development-in-2026-is-about-systems-performance-and-experience" />
     </url>
 
+    <url>
+        <loc>https://www.prashantjhadev.in/blog/csr-vs-ssr-vs-ssg-explained-with-real-production-trade-offs-seo-performance-scale</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+
+        <xhtml:link rel="alternate" hreflang="en" href="https://www.prashantjhadev.in/blog/csr-vs-ssr-vs-ssg-explained-with-real-production-trade-offs-seo-performance-scale" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://www.prashantjhadev.in/blog/csr-vs-ssr-vs-ssg-explained-with-real-production-trade-offs-seo-performance-scale" />
+    </url>
+
     <!-- ========== CONTACT ========== -->
     <url>
         <loc>https://www.prashantjhadev.in/contact</loc>
