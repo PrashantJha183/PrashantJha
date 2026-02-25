@@ -1,15 +1,17 @@
-import React, { memo, useEffect, useState, useRef } from "react";
+import React, { memo, useEffect, useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
 import { Link } from "react-router-dom";
 import { FiChevronLeft, FiChevronRight, FiArrowRight } from "react-icons/fi";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { ArrowRight } from "lucide-react";
 import { api } from "../../lib/api";
 
 /* ================= CACHE ================= */
 let blogCache = null;
 
 /* ================= BLUR IMAGE ================= */
-const BlurImage = memo(({ src, alt }) => {
+const BlurImage = memo(({ src, alt, priority }) => {
     const [loaded, setLoaded] = useState(false);
 
     return (
@@ -20,8 +22,9 @@ const BlurImage = memo(({ src, alt }) => {
 
             <img
                 src={src}
-                alt={alt}
-                loading="lazy"
+                alt={alt || "Blog image"}
+                loading={priority ? "eager" : "lazy"}
+                fetchPriority={priority ? "high" : "auto"}
                 decoding="async"
                 onLoad={() => setLoaded(true)}
                 className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${loaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-xl scale-105"
@@ -44,7 +47,6 @@ const BlogSkeleton = () => (
     </div>
 );
 
-/* ================= COMPONENT ================= */
 const HomeBlog = () => {
     const [blogs, setBlogs] = useState(null);
     const [index, setIndex] = useState(0);
@@ -59,7 +61,7 @@ const HomeBlog = () => {
         return () => window.removeEventListener("resize", check);
     }, []);
 
-    /* -------- FETCH -------- */
+    /* -------- FETCH BLOGS -------- */
     useEffect(() => {
         const fetchBlogs = async () => {
             if (blogCache) {
@@ -69,11 +71,7 @@ const HomeBlog = () => {
 
             try {
                 const res = await api.get("/public-blogs");
-                const allBlogs = Array.isArray(res.data?.blogs)
-                    ? res.data.blogs
-                    : [];
-
-                const sorted = [...allBlogs].sort(
+                const sorted = [...(res.data?.blogs || [])].sort(
                     (a, b) => new Date(b.created_at) - new Date(a.created_at)
                 );
 
@@ -88,12 +86,19 @@ const HomeBlog = () => {
     }, []);
 
     const visibleCards = isMobile ? 1 : 3;
+    const hasOverflow = blogs && blogs.length > visibleCards;
     const maxIndex = blogs ? Math.max(blogs.length - visibleCards, 0) : 0;
 
-    const next = () => setIndex((prev) => Math.min(prev + 1, maxIndex));
-    const prev = () => setIndex((prev) => Math.max(prev - 1, 0));
+    const next = () => {
+        if (!hasOverflow) return;
+        setIndex((prev) => Math.min(prev + 1, maxIndex));
+    };
 
-    /* -------- SWIPE -------- */
+    const prev = () => {
+        if (!hasOverflow) return;
+        setIndex((prev) => Math.max(prev - 1, 0));
+    };
+
     const swipeHandlers = useSwipeable({
         onSwipedLeft: next,
         onSwipedRight: prev,
@@ -101,22 +106,10 @@ const HomeBlog = () => {
         trackMouse: true,
     });
 
-    const getImage = (blog) =>
-        blog.content_blocks?.find(
-            (b) => b.type === "media" && b.media?.fileType === "image"
-        )?.media?.url;
-
-    const getDescription = (blog) => {
-        const text = blog.content_blocks
-            ?.find((b) => b.type === "paragraph")
-            ?.text?.replace(/<[^>]+>/g, "");
-
-        return text ? text.slice(0, 130) + "..." : "";
-    };
-
-    const slideWidth = containerRef.current
-        ? containerRef.current.offsetWidth / visibleCards
-        : 0;
+    const slideWidth = useMemo(() => {
+        if (!containerRef.current) return 0;
+        return containerRef.current.offsetWidth;
+    }, [isMobile]);
 
     return (
         <section className="py-20 new-font">
@@ -134,22 +127,52 @@ const HomeBlog = () => {
                     </h2>
                 </motion.div>
 
+                {/* ===== MOBILE SWIPE INDICATOR ===== */}
+                {isMobile && blogs && blogs.length > 1 && (
+                    <div className="flex justify-center mb-6">
+                        <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
+                            <motion.span
+                                animate={{ x: [0, -6, 0] }}
+                                transition={{ repeat: Infinity, duration: 0.9 }}
+                            >
+                                <FaArrowLeft />
+                            </motion.span>
+
+                            <span>Swipe</span>
+
+                            <motion.span
+                                animate={{ x: [0, 6, 0] }}
+                                transition={{ repeat: Infinity, duration: 0.9 }}
+                            >
+                                <FaArrowRight />
+                            </motion.span>
+                        </div>
+                    </div>
+                )}
+
                 <div className="relative" {...(isMobile ? swipeHandlers : {})}>
 
+                    {/* ===== DESKTOP ARROWS ===== */}
                     {!isMobile && blogs && (
                         <>
                             <button
                                 onClick={prev}
-                                disabled={index === 0}
-                                className="absolute -left-16 top-1/2 -translate-y-1/2 p-3 bg-[#052659] text-[#C1E8FF] shadow rounded-full z-10 disabled:opacity-40"
+                                disabled={!hasOverflow || index === 0}
+                                className={`absolute -left-16 top-1/2 -translate-y-1/2 p-3 bg-[#052659] text-[#C1E8FF] shadow rounded-full z-10 transition ${!hasOverflow || index === 0
+                                        ? "opacity-40 cursor-not-allowed"
+                                        : "hover:scale-105"
+                                    }`}
                             >
                                 <FiChevronLeft size={22} />
                             </button>
 
                             <button
                                 onClick={next}
-                                disabled={index === maxIndex}
-                                className="absolute -right-16 top-1/2 -translate-y-1/2 p-3 bg-[#052659] text-[#C1E8FF] shadow rounded-full z-10 disabled:opacity-40"
+                                disabled={!hasOverflow || index === maxIndex}
+                                className={`absolute -right-16 top-1/2 -translate-y-1/2 p-3 bg-[#052659] text-[#C1E8FF] shadow rounded-full z-10 transition ${!hasOverflow || index === maxIndex
+                                        ? "opacity-40 cursor-not-allowed"
+                                        : "hover:scale-105"
+                                    }`}
                             >
                                 <FiChevronRight size={22} />
                             </button>
@@ -163,35 +186,28 @@ const HomeBlog = () => {
                         <motion.div
                             animate={{ x: -index * slideWidth }}
                             transition={{ type: "spring", stiffness: 120, damping: 18 }}
-                            className="flex gap-6 will-change-transform"
+                            className={`flex ${isMobile ? "gap-0" : "gap-6"} will-change-transform`}
                         >
                             {!blogs
                                 ? Array.from({ length: 3 }).map((_, i) => (
                                     <BlogSkeleton key={i} />
                                 ))
-                                : blogs.map((blog) => (
-                                    <motion.article
+                                : blogs.map((blog, i) => (
+                                    <article
                                         key={blog.id}
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: false, amount: 0.3 }}
-                                        transition={{ duration: 0.5 }}
-                                        className="
-                        flex-none
-                        w-full
-                        lg:w-[32%]
-                        h-[420px]
-                        bg-white
-                        rounded-2xl
-                        shadow-lg
-                        border border-gray-200
-                        overflow-hidden
-                        flex flex-col
-                      "
+                                        className={`flex-none ${isMobile ? "w-full" : "w-[32%]"
+                                            } h-[420px] bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col`}
                                     >
                                         <BlurImage
-                                            src={getImage(blog)}
+                                            src={
+                                                blog.content_blocks?.find(
+                                                    (b) =>
+                                                        b.type === "media" &&
+                                                        b.media?.fileType === "image"
+                                                )?.media?.url
+                                            }
                                             alt={blog.title}
+                                            priority={!isMobile && i === 0}
                                         />
 
                                         <div className="p-5 flex flex-col flex-1">
@@ -200,7 +216,9 @@ const HomeBlog = () => {
                                             </h3>
 
                                             <p className="text-gray-600 text-sm mb-6 line-clamp-3 flex-1">
-                                                {getDescription(blog)}
+                                                {blog.content_blocks
+                                                    ?.find((b) => b.type === "paragraph")
+                                                    ?.text?.slice(0, 130)}...
                                             </p>
 
                                             <Link
@@ -211,9 +229,20 @@ const HomeBlog = () => {
                                                 <FiArrowRight />
                                             </Link>
                                         </div>
-                                    </motion.article>
+                                    </article>
                                 ))}
                         </motion.div>
+                    </div>
+
+                    {/* ===== EXPLORE MORE BUTTON ===== */}
+                    <div className="flex justify-center mt-12">
+                        <Link
+                            to="/blog"
+                            className="inline-flex items-center gap-2 px-8 py-4 bg-[#052659] text-white font-medium rounded-lg transition-all duration-300 hover:bg-white hover:text-[#052659] border border-[#052659]"
+                        >
+                            Explore More Blogs
+                            <ArrowRight className="w-5 h-5" />
+                        </Link>
                     </div>
                 </div>
             </div>

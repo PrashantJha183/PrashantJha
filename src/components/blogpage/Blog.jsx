@@ -280,14 +280,24 @@ const BlogImage = memo(({ src }) => {
     const [loaded, setLoaded] = useState(false);
 
     return (
-        <div className="relative min-h-[240px] p-3 bg-gray-200">
-            {!loaded && <div className="absolute inset-0 animate-pulse bg-gray-300" />}
+        <div className="relative min-h-[240px] p-3 bg-gray-200 flex items-center justify-center">
+            {!loaded && (
+                <div className="absolute inset-0 animate-pulse bg-gray-300" />
+            )}
+
             <img
                 src={src}
                 loading="lazy"
                 onLoad={() => setLoaded(true)}
                 alt="Blog visual content"
-                className={`w-full object-cover transition duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"}`}
+                className={`
+            transition duration-700
+            ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-lg"}
+            w-full
+            lg:h-full
+            object-contain
+            lg:object-cover
+        `}
             />
         </div>
     );
