@@ -54,6 +54,18 @@ const timeline = [
             "Till now, worked with more than 15 clients across diverse industries.",
         ],
     },
+
+
+    {
+    year: "2026",
+    title: "Enterprise Software Development & ERP Solutions",
+    text: [
+        "Worked as a Software Developer at Riddhi Infosystem, delivering scalable ERP enhancements and business-critical modules using ASP.NET MVC, SQL Server, JavaScript (ES6+), and modern development practices.",
+        "Designed and developed an internal Report Management System along with document sharing capabilities (Email & WhatsApp), significantly reducing manual effort and improving report accessibility across teams.",
+        "Built a centralized Pending Tasks Dashboard that provided real-time summaries and detailed tracking of pending activities across ERP modules, enabling faster decision-making and operational visibility.",
+        "Contributed as a Full Stack Developer (Contract) for the Entrepreneur Development Cell, building the MERN-based BuildUp Bharat platform while improving application performance, optimizing APIs, and implementing secure RBAC authorization."
+    ],
+},
 ];
 
 const StoryCard = memo(({ year, title, text, index }) => {

@@ -3,6 +3,30 @@ import { motion } from "framer-motion";
 
 const experiences = [
     {
+    year: "May 2026 - Present",
+    role: "Software Developer",
+    company: "Riddhi Infosystem",
+    points: [
+        "Delivered ERP enhancements, document management features, and full-stack business solutions by translating client requirements into scalable software capabilities, improving operational efficiency by approximately 35–45%.",
+        "Developed and integrated REST APIs, workflow automation, and document-sharing features (Email), reducing manual processing effort by nearly 40% while streamlining business operations across multiple ERP modules.",
+        "Designed and implemented an internal Report Management System that centralized report execution, scheduling, and access control, eliminating repetitive database interactions and reducing report generation and maintenance effort by approximately 60%.",
+        "Built a centralized Pending Tasks Dashboard using modern JavaScript (ES6+) that provided summaries and drill-down views of pending activities across ERP modules, reducing task tracking time by nearly 50% and improving operational visibility for business users.",
+        "Optimized application performance, resolved critical production issues, and modernized legacy ASP.NET MVC and SQL Server modules using efficient SQL optimization and ES6+ practices, improving system reliability, maintainability, and overall user experience."
+    ],
+},
+
+    {
+        year: "February 2026 - April 2026",
+        role: "Full Stack Developer (Freelance)",
+        company: "Entrepreneur Development Cell",
+        points: [
+            "Contributed to the development of BuildUp Bharat, a MERN-based platform connecting students with internships, assessments, job opportunities, and industry-focused learning programs.",
+            "Improved application performance by nearly 40% using React.js optimization techniques including TanStack Query, lazy loading, reusable component architecture, dynamic imports, and Zustand state management.",
+            "Reduced API response times by approximately 35% by eliminating N+1 queries, optimizing database operations, and implementing Role-Based Access Control (RBAC) middleware to strengthen platform security and scalability."
+        ],
+    },
+
+    {
         year: "July 2025 - December 2025",
         role: "Full Stack Developer",
         company: "Bazaar Digital",
@@ -10,7 +34,7 @@ const experiences = [
             "Developed and maintained scalable web applications using the MERN stack, managing the full SDLC from analysis and design to deployment and support.",
             "Performed thorough testing using React-based Jest test suites along with manual API validation through tools like Postman and Thunder Client to ensure reliability and security.",
             "Improved overall web application performance by 40–50% through custom development and optimization, replacing vulnerable template-based solutions with secure, client-focused implementations.",
-            "Applied on-page SEO best practices and optimized Core Web Vitals, increasing global search visibility and enhancing operational efficiency by 60-70%, resulting in 80-90% client satisfaction.",
+            "Applied on-page SEO best practices and optimized Core Web Vitals, increasing global search visibility and enhancing operational efficiency by 60–70%, resulting in 80–90% client satisfaction."
         ],
     },
 
@@ -24,8 +48,7 @@ const experiences = [
             "Managed end-to-end product development, ensuring seamless communication between stakeholders and development teams to build efficient and high-performing frontend systems.",
             "Collaborated with a team of four developers to enhance employee record management systems, resulting in a 60–70% improvement in operational efficiency through process optimization and feature enhancements."
         ],
-    }
-
+    },
 ];
 
 /* Desktop Animation */
