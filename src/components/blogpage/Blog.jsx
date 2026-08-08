@@ -116,13 +116,21 @@ function Blog() {
 
     const getMetaDescription = (blog) => {
         if (!blog) return "";
-        const firstParagraph = blog.content_blocks?.find(
+        if (blog.description) return blog.description.slice(0, 160);
+        const fromBlocks = blog.content_blocks?.find(
             (b) => b.type === "paragraph"
         );
-        return (
-            firstParagraph?.text?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-            blog.title
-        );
+        if (fromBlocks?.text) {
+            return fromBlocks.text.replace(/<[^>]+>/g, "").slice(0, 160);
+        }
+        if (blog.content_html) {
+            const text = blog.content_html
+                .replace(/<[^>]+>/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+            if (text) return text.slice(0, 160);
+        }
+        return blog.title;
     };
 
     if (loading) return <BlogSkeletonList />;
@@ -242,6 +250,11 @@ function Blog() {
                             <div className="p-6 pb-2 mb-4 flex justify-between bg-[#052659]">
                                 <div className="text-[#C1E8FF]">
                                     <h1 className="text-xl font-bold">{blog.title}</h1>
+                                    {blog.description && (
+                                        <p className="text-sm text-gray-200 mt-1">
+                                            {blog.description}
+                                        </p>
+                                    )}
                                     <p className="text-sm text-gray-100 mt-1 font-semibold">
                                         By {blog.profiles?.name || "Admin"} • {formatISTDate(blog.created_at)} IST
                                     </p>
@@ -254,20 +267,93 @@ function Blog() {
                                 )}
                             </div>
 
-                            <div className="space-y-5">
-                                {blog.content_blocks?.map((block) => {
-                                    if (block.type === "heading") {
-                                        return <h2 key={block.id} className="px-6 text-lg font-semibold">{block.text}</h2>;
-                                    }
-                                    if (block.type === "paragraph") {
-                                        return <p key={block.id} className="px-6 text-gray-700 text-justify">{block.text}</p>;
-                                    }
-                                    if (block.type === "media" && block.media?.fileType === "image") {
-                                        return <BlogImage key={block.id} src={block.media.url} />;
-                                    }
-                                    return null;
-                                })}
-                            </div>
+                            {/* Rich HTML content (new WYSIWYG editor) */}
+                            {blog.content_html ? (
+                                <div
+                                    className="blog-prose px-6"
+                                    dangerouslySetInnerHTML={{ __html: blog.content_html }}
+                                />
+                            ) : (
+                                /* Legacy content_blocks (old posts) */
+                                <div className="space-y-5">
+                                    {blog.content_blocks?.map((block) => {
+                                        if (block.type === "heading") {
+                                            return <h2 key={block.id} className="px-6 text-lg font-semibold">{block.text}</h2>;
+                                        }
+                                        if (block.type === "paragraph") {
+                                            return <p key={block.id} className="px-6 text-gray-700 text-justify">{block.text}</p>;
+                                        }
+                                        if (block.type === "list") {
+                                            const ListTag = block.ordered ? "ol" : "ul";
+                                            return (
+                                                <ListTag
+                                                    key={block.id}
+                                                    className={
+                                                        (block.ordered ? "list-decimal" : "list-disc") +
+                                                        " px-10 text-gray-700 space-y-1"
+                                                    }
+                                                >
+                                                    {(block.items || []).map((item, i) => (
+                                                        <li key={i}>{item}</li>
+                                                    ))}
+                                                </ListTag>
+                                            );
+                                        }
+                                        if (block.type === "quote") {
+                                            return (
+                                                <blockquote key={block.id} className="mx-6 border-l-4 border-[#052659] pl-4 text-gray-700 italic">
+                                                    {block.text}
+                                                </blockquote>
+                                            );
+                                        }
+                                        if (block.type === "code") {
+                                            return (
+                                                <pre key={block.id} className="mx-6 bg-gray-900 text-gray-100 rounded p-4 text-sm overflow-x-auto">
+                                                    {block.text}
+                                                </pre>
+                                            );
+                                        }
+                                        if (block.type === "table") {
+                                            return (
+                                                <table key={block.id} className="mx-6 w-[calc(100%-3rem)] border-collapse text-sm">
+                                                    <tbody>
+                                                        {(block.rows || []).map((row, i) => (
+                                                            <tr key={i}>
+                                                                {row.map((cell, j) => (
+                                                                    <td key={j} className="border border-gray-300 px-3 py-1">
+                                                                        {cell}
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            );
+                                        }
+                                        if (block.type === "divider") {
+                                            return <hr key={block.id} className="mx-6 border-gray-300" />;
+                                        }
+                                        if (block.type === "media" && block.media?.fileType === "image") {
+                                            return <BlogImage key={block.id} src={block.media.url} />;
+                                        }
+                                        if (block.type === "media" && block.media?.fileType === "audio") {
+                                            return (
+                                                <div className="px-6">
+                                                    <audio key={block.id} controls src={block.media.url} className="w-full" />
+                                                </div>
+                                            );
+                                        }
+                                        if (block.type === "media" && block.media?.fileType === "video") {
+                                            return (
+                                                <div className="px-6">
+                                                    <video key={block.id} controls src={block.media.url} className="w-full rounded" />
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })}
+                                </div>
+                            )}
                         </article>
                     ))}
                 </div>
@@ -302,8 +388,6 @@ const BlogImage = memo(({ src }) => {
         </div>
     );
 });
-
-
 
 /* =====================
    SKELETON
@@ -346,7 +430,6 @@ function BlogUnderDevelopment() {
       "
             aria-labelledby="blog-status-heading"
         >
-            {/* Icon / Emoji */}
             <motion.div
                 variants={fadeUp}
                 initial="initial"
@@ -354,10 +437,8 @@ function BlogUnderDevelopment() {
                 transition={{ duration: 0.5 }}
                 className="text-5xl mb-4"
             >
-                {/* 🚧 */}
             </motion.div>
 
-            {/* Heading */}
             <motion.h1
                 id="blog-status-heading"
                 variants={fadeUp}
@@ -369,7 +450,6 @@ function BlogUnderDevelopment() {
                 Blog Page Under Development
             </motion.h1>
 
-            {/* Description */}
             <motion.p
                 variants={fadeUp}
                 initial="initial"
@@ -386,7 +466,6 @@ function BlogUnderDevelopment() {
                 </span>
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
                 variants={fadeUp}
                 initial="initial"
@@ -409,7 +488,6 @@ function BlogUnderDevelopment() {
           "
                     aria-label="View projects"
                 >
-                    {/* 🧩  */}
                     View Projects <FiArrowRight />
                 </a>
 
@@ -429,7 +507,6 @@ function BlogUnderDevelopment() {
           "
                     aria-label="Explore services"
                 >
-                    {/* 🛠️  */}
                     Explore Services <FiArrowRight />
                 </a>
 
@@ -449,7 +526,6 @@ function BlogUnderDevelopment() {
           "
                     aria-label="About me"
                 >
-                    {/* 👤  */}
                     About Me <FiArrowRight />
                 </a>
             </motion.div>

@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState, Component } from "react";
 import { api } from "../../lib/api";
-import { useAuth } from "../../context/AuthContext";
 import { Pencil, Trash2, Share2 } from "lucide-react";
+
+const RichTextEditor = lazy(() => import("../components/RichTextEditor"));
 
 /* ======================================================
    UTILITIES
 ====================================================== */
-
-/* Generates a stable unique id for blocks on frontend */
-const generateId = () =>
-    `${Date.now()}_${Math.random().toString(36).slice(2)}`;
 
 /* Formats ISO date string into readable Indian locale format */
 const formatDateTime = (isoString) => {
@@ -27,29 +24,80 @@ const formatDateTime = (isoString) => {
     });
 };
 
-/* Normalizes content blocks coming from backend */
-const normalizeContentBlocks = (blog) => {
-    if (Array.isArray(blog.content_blocks)) return blog.content_blocks;
-    if (Array.isArray(blog.contentBlocks)) return blog.contentBlocks;
-    return [];
-};
+/* Escapes HTML special chars (safe for inserting into editor) */
+const escapeHtml = (str = "") =>
+    str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+
+/* Converts legacy content_blocks into basic HTML (for old posts in editor) */
+const blocksToHtml = (blocks = []) =>
+    (blocks || [])
+        .filter((b) => b && !b._delete)
+        .map((b) => {
+            if (b.type === "heading") {
+                return `<h${b.level || 2}>${escapeHtml(b.text || "")}</h${b.level || 2}>`;
+            }
+            if (b.type === "paragraph") {
+                return `<p>${escapeHtml(b.text || "")}</p>`;
+            }
+            if (b.type === "list") {
+                const tag = b.ordered ? "ol" : "ul";
+                const items = (b.items || [])
+                    .map((item) => `<li>${escapeHtml(item)}</li>`)
+                    .join("");
+                return `<${tag}>${items}</${tag}>`;
+            }
+            if (b.type === "quote") {
+                return `<blockquote>${escapeHtml(b.text || "")}</blockquote>`;
+            }
+            if (b.type === "code") {
+                return `<pre><code>${escapeHtml(b.text || "")}</code></pre>`;
+            }
+            if (b.type === "table") {
+                const rows = (b.rows || [])
+                    .map(
+                        (row) =>
+                            `<tr>${row
+                                .map((cell) => `<td>${escapeHtml(cell)}</td>`)
+                                .join("")}</tr>`
+                    )
+                    .join("");
+                return `<table>${rows}</table>`;
+            }
+            if (b.type === "divider") {
+                return `<hr />`;
+            }
+            if (b.type === "media" && b.media?.url) {
+                if (b.media.fileType === "pdf") {
+                    return `<p><a href="${b.media.url}" target="_blank" rel="noopener noreferrer">View PDF</a></p>`;
+                }
+                if (b.media.fileType === "audio") {
+                    return `<p><audio controls src="${b.media.url}"></audio></p>`;
+                }
+                if (b.media.fileType === "video") {
+                    return `<p><video controls src="${b.media.url}"></video></p>`;
+                }
+                return `<img src="${b.media.url}" alt="Blog image" />`;
+            }
+            return "";
+        })
+        .join("");
 
 /* Builds public blog URL using slug */
 const getPublicBlogUrl = (slug) => {
     return `${window.location.origin}/blogs/${slug}`;
 };
 
-/* Handles native sharing on mobile and clipboard fallback on desktop */
+/* Handles native sharing + clipboard fallback */
 const shareBlog = async (blog) => {
     const url = getPublicBlogUrl(blog.slug);
 
     if (navigator.share) {
         try {
-            await navigator.share({
-                title: blog.title,
-                text: blog.title,
-                url,
-            });
+            await navigator.share({ title: blog.title, text: blog.title, url });
             return;
         } catch {
             return;
@@ -65,11 +113,19 @@ const shareBlog = async (blog) => {
 };
 
 /* ======================================================
-   RENDER BLOCKS (READ MODE)
+   RENDER PREVIEW (READ MODE)
 ====================================================== */
+const RenderContentPreview = ({ blog }) => {
+    if (blog.content_html) {
+        return (
+            <div
+                className="blog-prose-preview mt-3"
+                dangerouslySetInnerHTML={{ __html: blog.content_html }}
+            />
+        );
+    }
 
-const RenderContentBlocks = ({ blog }) => {
-    const blocks = normalizeContentBlocks(blog);
+    const blocks = Array.isArray(blog.content_blocks) ? blog.content_blocks : [];
 
     if (!blocks.length) {
         return <p className="text-gray-500 text-sm mt-3">No content added yet</p>;
@@ -90,13 +146,65 @@ const RenderContentBlocks = ({ blog }) => {
 
                 if (block.type === "paragraph") {
                     return (
-                        <p
-                            key={block.id}
-                            className="text-gray-700 text-sm leading-relaxed"
-                        >
+                        <p key={block.id} className="text-gray-700 text-sm leading-relaxed">
                             {block.text}
                         </p>
                     );
+                }
+
+                if (block.type === "list") {
+                    const ListTag = block.ordered ? "ol" : "ul";
+                    return (
+                        <ListTag
+                            key={block.id}
+                            className={
+                                (block.ordered ? "list-decimal" : "list-disc") +
+                                " pl-5 text-sm text-gray-700 space-y-1"
+                            }
+                        >
+                            {(block.items || []).map((item, i) => (
+                                <li key={i}>{item}</li>
+                            ))}
+                        </ListTag>
+                    );
+                }
+
+                if (block.type === "quote") {
+                    return (
+                        <blockquote key={block.id} className="border-l-4 border-gray-300 pl-4 text-sm text-gray-600 italic">
+                            {block.text}
+                        </blockquote>
+                    );
+                }
+
+                if (block.type === "code") {
+                    return (
+                        <pre key={block.id} className="bg-gray-900 text-gray-100 rounded p-4 text-xs overflow-x-auto">
+                            {block.text}
+                        </pre>
+                    );
+                }
+
+                if (block.type === "table") {
+                    return (
+                        <table key={block.id} className="w-full border-collapse text-sm">
+                            <tbody>
+                                {(block.rows || []).map((row, i) => (
+                                    <tr key={i}>
+                                        {row.map((cell, j) => (
+                                            <td key={j} className="border border-gray-300 px-3 py-1">
+                                                {cell}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    );
+                }
+
+                if (block.type === "divider") {
+                    return <hr key={block.id} className="border-gray-300 my-2" />;
                 }
 
                 if (block.type === "media" && block.media?.url) {
@@ -111,6 +219,18 @@ const RenderContentBlocks = ({ blog }) => {
                             >
                                 View PDF
                             </a>
+                        );
+                    }
+
+                    if (block.media.fileType === "audio") {
+                        return (
+                            <audio key={block.id} controls src={block.media.url} className="w-full" />
+                        );
+                    }
+
+                    if (block.media.fileType === "video") {
+                        return (
+                            <video key={block.id} controls src={block.media.url} className="w-full rounded" />
                         );
                     }
 
@@ -133,10 +253,7 @@ const RenderContentBlocks = ({ blog }) => {
 /* ======================================================
    ADMIN BLOGS
 ====================================================== */
-
 export default function AdminBlogs() {
-    const { user } = useAuth();
-
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -147,14 +264,12 @@ export default function AdminBlogs() {
 
     const [formData, setFormData] = useState({
         title: "",
+        description: "",
         status: "draft",
     });
-
-    const [blocks, setBlocks] = useState([]);
-    const [mediaFiles, setMediaFiles] = useState({});
+    const [content, setContent] = useState("");
 
     /* ================= FETCH ================= */
-
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
@@ -171,15 +286,10 @@ export default function AdminBlogs() {
     }, []);
 
     /* ================= OPEN MODALS ================= */
-
     const openCreate = () => {
         setSelectedBlog(null);
-        setFormData({ title: "", status: "draft" });
-        setBlocks([
-            { id: generateId(), type: "heading", text: "" },
-            { id: generateId(), type: "paragraph", text: "" },
-        ]);
-        setMediaFiles({});
+        setFormData({ title: "", description: "", status: "draft" });
+        setContent("");
         setShowFormModal(true);
     };
 
@@ -187,62 +297,33 @@ export default function AdminBlogs() {
         setSelectedBlog(blog);
         setFormData({
             title: blog.title || "",
+            description: blog.description || "",
             status: blog.status || "draft",
         });
-        setBlocks(normalizeContentBlocks(blog));
-        setMediaFiles({});
+        setContent(
+            blog.content_html || blocksToHtml(blog.content_blocks) || ""
+        );
         setShowFormModal(true);
     };
 
-    /* ================= BLOCK ACTIONS ================= */
-
-    const addBlock = (type) => {
-        if (type === "media") {
-            setBlocks((prev) => [
-                ...prev,
-                { id: generateId(), type: "media", fileKey: null },
-            ]);
-        } else {
-            setBlocks((prev) => [
-                ...prev,
-                { id: generateId(), type, text: "" },
-            ]);
-        }
-    };
-
-    const updateBlockText = (id, text) => {
-        setBlocks((prev) =>
-            prev.map((b) => (b.id === id ? { ...b, text } : b))
-        );
-    };
-
-    const markDeleteBlock = (id) => {
-        setBlocks((prev) =>
-            prev.map((b) => (b.id === id ? { ...b, _delete: true } : b))
-        );
-    };
-
     /* ================= SAVE ================= */
-
     const submitBlog = async () => {
         if (!formData.title.trim()) {
             alert("Title is required");
             return;
         }
 
-        const form = new FormData();
-        form.append("title", formData.title.trim());
-        form.append("status", formData.status);
-        form.append("content_blocks", JSON.stringify(blocks));
-
-        Object.entries(mediaFiles).forEach(([key, file]) => {
-            if (file) form.append(key, file);
-        });
+        const payload = {
+            title: formData.title.trim(),
+            description: formData.description.trim(),
+            status: formData.status,
+            content,
+        };
 
         try {
             const res = selectedBlog
-                ? await api.put(`/blogs/${selectedBlog.id}`, form)
-                : await api.post("/blogs", form);
+                ? await api.put(`/blogs/${selectedBlog.id}`, payload)
+                : await api.post("/blogs", payload);
 
             const blog = res.data?.blog;
             if (!blog) return;
@@ -260,7 +341,6 @@ export default function AdminBlogs() {
     };
 
     /* ================= DELETE ================= */
-
     const deleteBlog = async () => {
         if (!selectedBlog) return;
 
@@ -274,7 +354,6 @@ export default function AdminBlogs() {
     };
 
     /* ================= UI ================= */
-
     if (loading) {
         return (
             <div className="mt-20 px-4">
@@ -343,7 +422,7 @@ export default function AdminBlogs() {
                             </div>
                         </div>
 
-                        <RenderContentBlocks blog={b} />
+                        <RenderContentPreview blog={b} />
                     </div>
                 ))}
             </div>
@@ -359,6 +438,16 @@ export default function AdminBlogs() {
                         className="w-full px-4 py-3 border rounded"
                     />
 
+                    <textarea
+                        value={formData.description}
+                        onChange={(e) =>
+                            setFormData({ ...formData, description: e.target.value })
+                        }
+                        placeholder="Short description (SEO)"
+                        rows={2}
+                        className="w-full px-4 py-3 border rounded resize-none"
+                    />
+
                     <select
                         value={formData.status}
                         onChange={(e) =>
@@ -370,85 +459,20 @@ export default function AdminBlogs() {
                         <option value="published">Published</option>
                     </select>
 
-                    <div className="max-h-[50vh] overflow-y-auto space-y-4 pr-1">
-                        {blocks.map((block) =>
-                            block._delete ? null : (
-                                <div key={block.id} className="border p-3 rounded">
-                                    {block.type !== "media" && (
-                                        <textarea
-                                            value={block.text || ""}
-                                            onChange={(e) =>
-                                                updateBlockText(
-                                                    block.id,
-                                                    e.target.value
-                                                )
-                                            }
-                                            placeholder={block.type}
-                                            className="w-full border p-2 rounded"
-                                        />
-                                    )}
-
-                                    {block.type === "media" && (
-                                        <>
-                                            {block.media?.url && (
-                                                <img
-                                                    src={block.media.url}
-                                                    className="w-full rounded mb-2"
-                                                />
-                                            )}
-
-                                            <input
-                                                type="file"
-                                                onChange={(e) => {
-                                                    const fileKey =
-                                                        block.fileKey ||
-                                                        `media_${generateId()}`;
-
-                                                    setBlocks((prev) =>
-                                                        prev.map((b) =>
-                                                            b.id === block.id
-                                                                ? {
-                                                                    ...b,
-                                                                    fileKey,
-                                                                }
-                                                                : b
-                                                        )
-                                                    );
-
-                                                    setMediaFiles((prev) => ({
-                                                        ...prev,
-                                                        [fileKey]:
-                                                            e.target.files[0],
-                                                    }));
-                                                }}
-                                            />
-                                        </>
-                                    )}
-
-                                    <button
-                                        onClick={() =>
-                                            markDeleteBlock(block.id)
-                                        }
-                                        className="text-red-600 text-sm mt-2"
-                                    >
-                                        Remove block
-                                    </button>
-                                </div>
-                            )
-                        )}
-                    </div>
-
-                    <div className="flex gap-2">
-                        <button onClick={() => addBlock("heading")}>
-                            Add heading
-                        </button>
-                        <button onClick={() => addBlock("paragraph")}>
-                            Add paragraph
-                        </button>
-                        <button onClick={() => addBlock("media")}>
-                            Add media
-                        </button>
-                    </div>
+                    <Suspense
+                        fallback={
+                            <div className="h-[480px] border rounded flex items-center justify-center text-gray-500">
+                                Loading editor...
+                            </div>
+                        }
+                    >
+                        <EditorErrorBoundary key={selectedBlog?.id || "new-blog"}>
+                            <RichTextEditor
+                                initialContent={content}
+                                onChange={setContent}
+                            />
+                        </EditorErrorBoundary>
+                    </Suspense>
 
                     <ModalActions
                         onSave={submitBlog}
@@ -471,11 +495,36 @@ export default function AdminBlogs() {
 }
 
 /* ================= SHARED ================= */
+class EditorErrorBoundary extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error) {
+        console.error("Editor failed to load:", error);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="border rounded p-4 text-red-600 text-sm">
+                    The editor failed to load. Please close and reopen the form.
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
 
 function Modal({ title, children }) {
     return (
         <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-start overflow-y-auto py-10">
-            <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg max-h-[90vh] flex flex-col">
+            <div className="bg-white w-full max-w-3xl rounded-xl shadow-lg max-h-[90vh] flex flex-col">
                 <div className="px-6 py-4 border-b shrink-0">
                     <h3 className="text-xl font-semibold">{title}</h3>
                 </div>

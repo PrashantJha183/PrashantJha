@@ -77,3 +77,153 @@
     border-top-right-radius: 0rem;
   }
 }
+
+/* ==================================================
+   RICH TEXT BLOG CONTENT (WYSIWYG output styles)
+================================================== */
+.blog-prose {
+  line-height: 1.75;
+  color: #374151;
+  font-size: 1.05rem;
+}
+.blog-prose > *:first-child { margin-top: 0; }
+.blog-prose > *:last-child { margin-bottom: 0; }
+.blog-prose h1 { font-size: 2rem; font-weight: 700; color: #052659; margin: 2rem 0 1rem; line-height: 1.3; }
+.blog-prose h2 { font-size: 1.6rem; font-weight: 700; color: #052659; margin: 2rem 0 0.9rem; line-height: 1.3; }
+.blog-prose h3 { font-size: 1.35rem; font-weight: 600; color: #052659; margin: 1.8rem 0 0.8rem; }
+.blog-prose h4 { font-size: 1.15rem; font-weight: 600; color: #052659; margin: 1.5rem 0 0.6rem; }
+.blog-prose h5,
+.blog-prose h6 { font-size: 1rem; font-weight: 600; color: #1f2937; margin: 1.25rem 0 0.5rem; }
+.blog-prose p { margin: 0 0 1.1rem; text-align: justify; }
+.blog-prose a { color: #2563eb; text-decoration: underline; }
+.blog-prose strong { font-weight: 700; color: #111827; }
+.blog-prose em { font-style: italic; }
+.blog-prose u { text-decoration: underline; }
+.blog-prose s { text-decoration: line-through; }
+.blog-prose ul,
+.blog-prose ol { margin: 0 0 1.1rem; padding-left: 1.6rem; }
+.blog-prose ul { list-style: disc; }
+.blog-prose ol { list-style: decimal; }
+.blog-prose li { margin: 0.35rem 0; }
+.blog-prose blockquote {
+  border-left: 4px solid #052659;
+  background: #f1f5f9;
+  margin: 1.2rem 0;
+  padding: 0.9rem 1.2rem;
+  color: #334155;
+  border-radius: 0.25rem;
+  font-style: italic;
+}
+.blog-prose pre {
+  background: #f1f3f5;
+  color: #24292f;
+  padding: 1rem 1.2rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.2rem 0;
+  font-size: 0.9rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  line-height: 1.6;
+  white-space: pre;
+}
+.jodit-wysiwyg pre {
+  background: #f1f3f5;
+  color: #24292f;
+  padding: 1rem 1.2rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  line-height: 1.6;
+  white-space: pre;
+}
+.blog-prose code {
+  background: #e2e8f0;
+  color: #0f172a;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+}
+.blog-prose pre code { background: transparent; color: inherit; padding: 0; }
+.blog-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5rem auto;
+  display: block;
+}
+.blog-prose figure { margin: 1.5rem 0; text-align: center; }
+.blog-prose figcaption {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+.blog-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+.blog-prose th,
+.blog-prose td {
+  border: 1px solid #9ca3af;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.blog-prose th { background: #f8fafc; font-weight: 600; }
+.blog-prose hr { border: none; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
+.blog-prose iframe,
+.blog-prose video { max-width: 100%; border-radius: 0.5rem; }
+
+/* Admin list card preview (full height) */
+.blog-prose-preview {
+  line-height: 1.6;
+  color: #374151;
+  font-size: 0.9rem;
+}
+.blog-prose-preview h1,
+.blog-prose-preview h2,
+.blog-prose-preview h3,
+.blog-prose-preview h4,
+.blog-prose-preview h5,
+.blog-prose-preview h6 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #052659;
+  margin: 0.75rem 0 0.4rem;
+}
+.blog-prose-preview p { margin: 0 0 0.5rem; }
+.blog-prose-preview ul,
+.blog-prose-preview ol { padding-left: 1.4rem; margin: 0 0 0.5rem; }
+.blog-prose-preview ul { list-style: disc; }
+.blog-prose-preview ol { list-style: decimal; }
+.blog-prose-preview img {
+  max-width: 100%;
+  border-radius: 0.4rem;
+  margin: 0.75rem 0;
+}
+.blog-prose-preview a { color: #2563eb; }
+.blog-prose-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+}
+.blog-prose-preview th,
+.blog-prose-preview td {
+  border: 1px solid #9ca3af;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.blog-prose-preview th { background: #f8fafc; font-weight: 600; }
+.blog-prose-preview pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+.blog-prose-preview pre code { background: transparent; color: inherit; padding: 0; }
